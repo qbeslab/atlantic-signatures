@@ -203,7 +203,7 @@ thread the power cable through the hole on its top. You may now place the
 raspberry pi to the velcro at the back of the Create like so. Note this
 image is flipped and the text on the pi's case should be facing away from you.
 
-.. image: _static/images/raspberrypi/Create-pic-3.jpg
+.. image:: _static/images/raspberrypi/Create-pic-3.jpg
 
 Connect the Create's serial communications cable to the Create and one of the
 USB ports found on the Raspberry Pi. Lastly, connect the power cable to the
@@ -213,7 +213,7 @@ we press the power button found on the power source. Once the power button is
 pressed a red light inside the Pi will indicate it is receiving power while a green light
 is flickering indicating it is booting.
 
-.. image: _static/images/raspberrypi/Create-pic-4.jpg
+.. image:: _static/images/raspberrypi/Create-pic-4.jpg
 
 Step 5: First Boot
 ==================

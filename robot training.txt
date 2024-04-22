@@ -1,0 +1,49 @@
+ROBOT TRAINING
+- Start at the following location with the "index" file
+C:\Users\bkt2\Desktop\atlantic_signatures_create\atlantic_signatures_create\atlantic-signatures\docs\_build\html
+
+- for 3/25/2022 - use pi as the name of the pi, and "qbes" as the password
+
+For the Pi on the create
+ - on the host computer, make sure that the computer is connected to the lab wireless network
+ - in the command prompt on the host computer, ping /4 "hostname" (the hostname is the thing that you entered in the rpi setup.local)
+     - you should get back whether its connected, and that the device is connected  
+  - open Putty
+  - enter the ip address that's on the pi itself
+
+ON THE HOST COMPUTER
+- On the host computer,  go to the directory where things have been downloaded to from the command prompt (C:\Users\bkt2\Desktop\atlantic_signatures_create\atlantic_signatures_create)
+
+-  do "scp -rp atlantic-signatures pi@RPI3.local:/home/pi/atlantic_signatures" enter the pi's password when prompted
+
+- For Anaconda on the host computer (using anaconda prompt)
+  - navigate to C:\Users\bkt2\Desktop\atlantic_signatures_create\atlantic_signatures_create\atlantic-signatures
+   - pip install pyserial
+   - pip install pint
+
+ON THE PI (through putty)
+  - go into the project that you scp'd over (i.e., cd the_project_name)
+  - run each of the lines
+
+python -m venv /home/pi/atlantic_signatures/venv
+cp -r /usr/lib/python3/dist-packages/numpy* /home/pi/atlantic_signatures/venv/lib/python3.9/site-packages/
+*alternatively, you could do  cp -r /usr/lib/python3/dist-packages/numpy* ./venv/lib/python3.9/site-packages/
+
+cp -r /usr/lib/python3/dist-packages/serial* /home/pi/atlantic_signatures/venv/lib/python3.9/site-packages/
+*alternatively, you could do  cp -r /usr/lib/python3/dist-packages/serial* ./venv/lib/python3.9/site-packages/
+
+source /home/pi/atlantic_signatures/venv/bin/activate
+pip install /home/pi/atlantic_signatures/setup-files/Pint-0.18-py2.py3-none-any.whl --no-deps
+python /home/pi/atlantic_signatures/setup.py install
+
+ON THE HOST COMPUTER
+   - python setup.py install
+
+ON THE CREATE THROUGH PUTTY
+- atlantic_signatures run (run this FIRST, count to 5, then run the same thing with a config file specified on the host computer
+
+ON THE HOST COMPUTER
+   - atlantic_signatures run --file=Test-1.cfg (run this AFTER running the same thing on the create)
+
+TO CLOSE, ON THE PI THROUGH PUTTY
+- sudo shutdown -h now (you WILL get a fatal error from putty, and  that is ok and good)

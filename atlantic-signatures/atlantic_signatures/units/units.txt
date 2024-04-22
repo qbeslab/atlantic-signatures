@@ -1,0 +1,78 @@
+
+@defaults
+    group = international
+    system = RoombaUnits
+@end
+
+
+#### PREFIXES ####
+
+# decimal prefixes
+milli- = 1e-3  = m-
+centi- = 1e-2  = c-
+deci- =  1e-1  = d-
+deca- =  1e+1  = da- = deka-
+hecto- = 1e2   = h-
+kilo- =  1e3   = k-
+
+
+#### BASE UNITS ####
+meter = [length] = m = metre
+degree = [] = deg = °
+second = [time] = s = sec
+
+
+#### DERIVED UNITS #####
+
+# Units of length
+inch = yard / 36 = in = inches
+foot = yard / 3 = ft = feet
+yard = 0.9144 * meter = yd
+mile = 1760 * yard = mi
+
+# Units of angles
+radian = 180 * degree / π = rad
+
+# Units of time
+minute = 60 * second = min
+hour = 60 * minute = hr
+day = 24 * hour
+
+
+#### DERIVED UNIT CONVERSIONS #####
+
+# Velocity
+mph = mile / hour = miles_per_hour
+kph = kilometer / hour = kilometers_per_hour
+fps = feet / second = feet_per_second
+mps = meter / second = meters_per_second
+
+# Angular velocity
+degree_per_second = degree / second
+radian_per_second = radian / second
+
+
+#### CONSTANTS ####
+
+# At 5 decimal places, the below approximation of pi introduces an error of
+# 0.00015 degrees into calculations of angle which is more than adequate.
+pi = 3.14159 = π
+
+
+@system RoombaUnits using international
+    millimeter
+    radian
+    second
+@end
+    
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,14 @@
+include README.rst
+include MANIFEST.in
+include setup.py
+include setup.cfg
+include VERSION.txt
+
+# all pycache files are to be excluded
+global-exclude *.py[co]
+
+global-include *.dll
+global-include *.pyd
+
+include atlantic_signatures/units/units.txt
+include atlantic_signatures/demo.cfg

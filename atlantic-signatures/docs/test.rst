@@ -50,4 +50,4 @@ connectivity issues arise.
 Once the test is complete (failure or success), a data file will be generated in a
 aptly named directory titled 'data'. The data directory will be created at the location
 the anaconda prompt was working at which should be the users home page (for me it is
-C:\Users\lucsc).
+C:\\Users\\lucsc).

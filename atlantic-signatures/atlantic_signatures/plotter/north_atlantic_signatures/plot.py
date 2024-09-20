@@ -1,7 +1,7 @@
 """
 Python configuration file that contains all the data structures necessary to
 generate a plot or plots with the formatting of the paper:
-    
+
  A bioinspired navigation strategy that uses magnetic signatures Q1 to navigate
  without GPS in a linearized northern Atlantic ocean: a simulation study
 
@@ -135,7 +135,7 @@ class AnimatedPlot:
         path = kwargs.setdefault('path', BUILTIN_DATA_DIR)
         self.t_multi = kwargs.pop('t_multi', 1)
         config = ConfigLoader(file, **kwargs)
-        #X, Y, THETA, TIME = 
+        #X, Y, THETA, TIME =
         a = load_zipped_data_file(get_data_file(file), zip_path=path)
         print(a)
         X, Y, THETA, TIME = a
@@ -144,7 +144,7 @@ class AnimatedPlot:
         self.X, self.Y, self.T = X, Y, TIME
         self.data = (X, Y, TIME)
         self.t0 = TIME[0]
-        
+
 
         id_map = {
             '<int>': config.getint,
@@ -160,13 +160,13 @@ class AnimatedPlot:
             for option in config.options(section):
                 id, default, unit = defaults.CONFIG_OPTIONS.get((section, option), ('<string>', None, None))
                 kwargs = {}
-                
+
                 if default is not None:
                     kwargs['fallback'] = default
-                
+
                 if id == '<quantity>' and unit is not None:
                     kwargs['default_units'] = unit
-                    
+
                 if section == 'Goal Properties':
                     id = '<quantity>'
 
@@ -182,7 +182,7 @@ class AnimatedPlot:
         self.ax.set_ylabel(**yaxis_kwargs)
         self.ax.set_xticks(**xticks_kwargs)
         self.ax.set_yticks(**yticks_kwargs)
-        
+
         #bbox = self.ax.get_window_extent().transformed(self.fig.dpi_scale_trans.inverted())
         #print(self.ax.get_window_extent().inverse_transformed(plt.gca().transData))
         #print(self.ax.get_window_extent().x1 - self.ax.get_window_extent().x0)
@@ -196,26 +196,26 @@ class AnimatedPlot:
            self.ax.plot(*goal.m, color=r_goal_colors[goalnum % len(r_goal_colors)], **goal_marker_kwargs)
            self.ax.add_artist(Circle(goal.m, **r_multi_kwargs))
         """
-           
+
         _goals = self.cache['Goal Properties'].values()
         for goal, parulacolor in zip(_goals, get_evenly_spaced_parula_colors(len(_goals))):
             #self.ax.plot(*goal.m, color=parulacolor, **goal_marker_kwargs)
             self.ax.add_artist(Circle(goal.m, facecolor=parulacolor, **r_goal_kwargs))
             self.ax.add_artist(Circle(goal.m, **r_multi_kwargs))
-           
+
         self.add_current()
         self.add_beta_gamma()
-        
 
-        
+
+
         self.start_animation()
-        
+
         #self.ax.plot(X, Y, color='black')
         # plt.show()
-        
+
     def add_current(self):
         sec = 'Current Properties'
-    
+
         s_x = self.cache[sec]['s_x']
         s_y = self.cache[sec]['s_y']
         v_t = self.cache[sec]['v_theta'].m
@@ -230,7 +230,7 @@ class AnimatedPlot:
         V_X, V_Y = a*math.cos(t_f) - b*math.sin(t_f), a*math.sin(t_f) + b*math.cos(t_f)
 
         self.ax.quiver(X, Y, V_X, V_Y, color='grey')
-        
+
     def add_beta_gamma(self):
         sec = 'Field Properties'
         getter = itemgetter('a_inc', 'b_inc', 'c_inc', 'a_int', 'b_int', 'c_int', 'eta')
@@ -238,18 +238,18 @@ class AnimatedPlot:
 
         d_beta  = sum(i*j for i, j in zip(self.cache[sec]['beta_0'].m, (a_inc, b_inc, c_inc)))
         d_gamma = sum(i*j for i, j in zip(self.cache[sec]['gamma_0'].m, (a_int, b_int, c_int)))
-        
+
         t_int = self.cache[sec]['theta_int'].to_base_units().m
         t_inc = -1 * (math.pi/2 - t_int - self.cache[sec]['lambda'].to_base_units().m)
-        
+
         X, Y = np.meshgrid(np.linspace(*self.ax.get_xlim(), 5), np.linspace(*self.ax.get_ylim(), 5))
 
         beta  = (eta/c_inc) * (d_beta  - a_inc*(X*math.cos(t_inc) + Y*math.sin(t_inc)) - b_inc*(Y*math.cos(t_inc) - X*math.sin(t_inc)))
         gamma = (eta/c_int) * (d_gamma - a_int*(X*math.cos(t_int) + Y*math.sin(t_int)) - b_int*(Y*math.cos(t_int) - X*math.sin(t_int)))
-    
+
         Cb = self.ax.contour(X, Y, beta, **beta_kwargs)
         Cg = self.ax.contour(X, Y, gamma, **gamma_kwargs)
-    
+
     def gen_func(self):
         multi = int(self.t_multi)
         for i, t in enumerate(itertools.islice(self.T, 0, len(self.T), multi)):
@@ -258,9 +258,9 @@ class AnimatedPlot:
     def start_animation(self):
         self.line, = self.ax.plot([], [], color='black', linewidth=2, solid_capstyle='round')
         #self.anim = FuncAnimation(self.fig, self.update_animation, self.gen_func, interval=self.t0)
-        self.anim = FuncAnimation(self.fig, self.update_animation_mk2, 
+        self.anim = FuncAnimation(self.fig, self.update_animation_mk2,
                                   frames=np.arange(0, len(self.T), 10))
-        
+
     def update_animation(self, data):
         i, t = data
 
@@ -272,20 +272,20 @@ class AnimatedPlot:
 
         self.line.set_data(self.X[:i], self.Y[:i])
         return self.line,
-    
+
     def update_animation_mk2(self, i):
         t = self.T[i]
-        
+
         delay = int(1000*(t-self.t0)/self.t_multi)
         if delay < 0:
             delay = 0
         self.anim.event_source.interval = delay
         self.t0 = t
-        
+
         self.line.set_data(self.X[:i], self.Y[:i])
         return self.line,
-        
-    
+
+
     def native_units_to_pts(self):
         """
         Return the number of points (fontsize) that scales the axis dimensions
@@ -293,10 +293,10 @@ class AnimatedPlot:
         """
         xmin, xmax = self.ax.get_xlim()
 
-        # scale is the number of pixels per base plot unit (typically meters) 
+        # scale is the number of pixels per base plot unit (typically meters)
         scale = self.ax.get_window_extent().width / (xmax - xmin)
         return scale // 2
-    
+
     def save(self, fname, *args, **kwargs):
         self.anim.save(fname, *args, **kwargs)
 
@@ -326,16 +326,3 @@ if __name__ == '__main__':
                 x = AnimatedPlot(cfgfile, t_multi=10)
                 x.save('Test-%d.gif' % testnum, fps=10)
                 break
-
-
-
-
-
-
-
-
-
-
-
-
-

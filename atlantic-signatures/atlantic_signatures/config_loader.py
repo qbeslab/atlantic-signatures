@@ -25,13 +25,13 @@ class QuantityConfigParser(ConfigParser):
         Return a pint.Quantity (a number/number array bound to a unit) from a
         given section-option pair.
         """
-        
+
         try:
             # First we get the raw string as returned from the ConfigParser.get
             # method and then evaluate instead of deferring to the _get_conv
             # method that the various other getter methods use.
             value = self.get(section, option, raw=raw, vars=vars, fallback=fallback)
-            
+
         except (NoSectionError, NoOptionError):
             if fallback is _UNSET:
                 raise
@@ -41,16 +41,16 @@ class QuantityConfigParser(ConfigParser):
                 return ureg.Quantity(fallback, units)
             else:
                 return fallback
-            
+
         unit_match = self._UNIT_RE.search(value)
         unit = unit_match.group(0) if unit_match is not None else None
-        
+
         if unit is None or unit not in ureg:
             # If the returned unit is invalid or there is no unit, resort to
             # the default unit provided in the "units" keyword-argument and
             # finally the quantity is set as "dimensionless" as a last resort
-            unit = 'dimensionless' if units is _UNSET else units           
-        
+            unit = 'dimensionless' if units is _UNSET else units
+
         # Retain the type of the magnitude with the below code. If a option is
         # "45 millimeters" its magnitude will be 45 and not 45.0.
         magnitudes = []
@@ -66,18 +66,18 @@ class QuantityConfigParser(ConfigParser):
                         "The section-option pair: '%s:%s' should have a size: "
                         "%d" %(section, option, size)
                         )
-                
+
         if len(magnitudes) == 1:
             # If only one number, turn back into a scalar quantity
             magnitudes = magnitudes[0]
-        
+
         return ureg.Quantity(magnitudes, unit)
-    
+
 
 REQUIRED_CONFIG_SECTIONS = (
     'Field Properties',
     'Current Properties',
-    'Goal Properties', 
+    'Goal Properties',
     'Boundary Conditions',
     'Create Properties'
     )
@@ -111,13 +111,13 @@ CONFIG_OPTIONS = {
     ('Create Properties', 'r_multi'): ('<quantity>', 0.1 * ureg.meter, 'meter'),
     ('Create Properties', 'r_goal'): ('<quantity>', 0.5 * ureg.meter, 'meter'),
     }
-    
+
 
 
 class Loader:
 
     _VAR_RE = re.compile(r"(?P<var>\w+)\s*\((?P<unit>[a-zA-Z0-9_\^\/]+)\)")
-    
+
     def __init__(self, *args, **kwargs):
         self._DELIM  = kwargs.get('delimiter', ',')
         self._SEP_RE = re.compile(r"\s*%s\s*" % self._DELIM)
@@ -127,9 +127,9 @@ class Loader:
         Given an opened data file object *file* this function will return a
         numpy array of the data inside that file.
         """
-        
+
         import numpy as np
-        
+
         # Before the file is loaded into a numpy array we process the first
         # row of the file which is supposed to be the header
 
@@ -139,7 +139,7 @@ class Loader:
             if unit not in ureg:
                 unit = ''
             var_dict[var] = ureg.Unit(unit)
-            
+
         kwargs = dict(skiprows=1, delimiter=self.DELIM, dtype=[(var, float) for var in var_dict])
 
         try:
@@ -151,7 +151,7 @@ class Loader:
             # thus it is used only as a last resort
             kwargs['skip_header'] = kwargs.pop('skiprows')
             data = np.genfromtxt(file, **kwargs)
-            
+
         return var_dict, data
 
     def read_config_file(self, file):
@@ -167,7 +167,7 @@ class Loader:
 
 
 def config_to_dict(parser_object):
-    
+
     id_map = {
         '<int>': parser_object.getint,
         '<float>': parser_object.getfloat,
@@ -182,13 +182,13 @@ def config_to_dict(parser_object):
         for option in parser_object.options(section):
             id, default, unit = CONFIG_OPTIONS.get((section, option), ('<string>', None, None))
             kwargs = {}
-                
+
             if default is not None:
                 kwargs['fallback'] = default
-                    
+
             if section == 'Goal Properties':
                 id, unit = '<quantity>', 'meters'
-                
+
             if id == '<quantity>' and unit is not None:
                 kwargs['units'] = unit
                 q = id_map[id](section, option, **kwargs).to_base_units().m
@@ -196,17 +196,9 @@ def config_to_dict(parser_object):
                 continue
 
             cache[section][option] = id_map[id](section, option, **kwargs)
-            
+
     return cache
 
 
 def config_to_json(parser_object):
     return json.dumps(config_to_dict(parser_object))
-
-
-
-
-
-
-
-

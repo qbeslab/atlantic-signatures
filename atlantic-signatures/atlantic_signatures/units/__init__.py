@@ -6,11 +6,11 @@ in our unit system.
 
 The file *units.txt* defines a system known as 'RoombaUnits' with its base
 units:
-    
+
     [length] = meters
     [angle]  = radians
     [time]   = seconds
-    
+
 If units.txt is missing the default system (SI) will be resorted to.
 """
 import os.path

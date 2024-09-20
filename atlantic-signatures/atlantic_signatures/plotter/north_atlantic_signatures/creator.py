@@ -36,10 +36,9 @@ for file in os.listdir(datadir):
         with open(os.path.splitext(file)[0] + '.cfg', mode='w') as f:
             config.write(f)
         config.clear()
-        
+
         with open(file, 'rb') as f:
             with gzip.open(file + '.gz', mode='wb') as fg:
                 for linenum, line in enumerate(f, start=1):
                     if linenum >= header_line:
                         fg.write(line)
-

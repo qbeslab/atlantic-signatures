@@ -4,7 +4,7 @@
 # dependecies of the atlantc_signatures project
 #
 # This script should be run using source! Running normally with bash will activate
-# the virtual environment in a new shell 
+# the virtual environment in a new shell
 
 # The directory of the atlantic_signatures/
 # This should be /home/pi/atlantic-signatures but we cannot assume the user
@@ -30,4 +30,3 @@ echo Successfully copied system pyserial to the virtual environment
 pip install $BASEDIR/setup-files/Pint*.whl --no-deps
 
 pip install -e $BASEDIR -U --no-deps --no-index
-

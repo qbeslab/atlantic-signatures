@@ -16,7 +16,7 @@ RUNNING_AS_HOST = os.environ.get('RUNNING_AS_HOST', sys.platform == 'win32')
 
 def host_run(args):
     return Host(config_file=args.config_file, objectname=args.objectname, host=args.host, timeout=args.timeout)
-    
+
 
 def client_run(args):
     return Client(host=args.host)
@@ -77,7 +77,7 @@ def main():
     parser = get_parser()
     args = parser.parse_args()
     args.func(args)
-        
+
 
 if __name__ == '__main__':
     main()

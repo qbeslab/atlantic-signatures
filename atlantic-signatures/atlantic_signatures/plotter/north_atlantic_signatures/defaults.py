@@ -9,7 +9,7 @@ from mycreate_plotter.config_loader import ureg
 REQUIRED_CONFIG_SECTIONS = (
     'Field Properties',
     'Current Properties',
-    'Goal Properties', 
+    'Goal Properties',
     'Boundary Conditions',
     'Create Properties'
     )
@@ -41,16 +41,3 @@ CONFIG_OPTIONS = {
     ('Create Properties', 'r_multi'): ('<quantity>', 0.1 * ureg.meter, 'meter'),
     ('Create Properties', 'r_goal'): ('<quantity>', 0.5 * ureg.meter, 'meter'),
     }
-
-
-
-
-
-
-
-
-
-
-
-
-

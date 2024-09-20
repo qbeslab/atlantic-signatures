@@ -21,4 +21,4 @@ for date in dates:
             n = os.path.join(datedir, path)
             with gzip.open(n, mode='rt') as file:
                 with open(os.path.splitext(n)[0] + '.csv', mode='w') as csvfile:
-                    csvfile.write(file.read())   
+                    csvfile.write(file.read())

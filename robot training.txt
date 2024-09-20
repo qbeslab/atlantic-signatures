@@ -7,7 +7,7 @@ C:\Users\bkt2\Desktop\atlantic_signatures_create\atlantic_signatures_create\atla
 For the Pi on the create
  - on the host computer, make sure that the computer is connected to the lab wireless network
  - in the command prompt on the host computer, ping /4 "hostname" (the hostname is the thing that you entered in the rpi setup.local)
-     - you should get back whether its connected, and that the device is connected  
+     - you should get back whether its connected, and that the device is connected
   - open Putty
   - enter the ip address that's on the pi itself
 

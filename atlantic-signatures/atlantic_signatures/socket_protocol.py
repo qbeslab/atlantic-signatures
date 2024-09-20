@@ -18,7 +18,7 @@ class PACKETS(IntFlag):
     DATA       = 0x04
     START      = 0x08
     CLOSE      = 0x10
-    
+
     ACKCOMMAND = 0xfe
     ACKCONFIG  = 0xfd
     ACKDATA    = 0xfb
@@ -28,20 +28,20 @@ class PACKETS(IntFlag):
     @classmethod
     def get_ack(cls, value: int) -> int:
         return bytes([0xff ^ value])
-    
+
     @classmethod
     def get_ackb(cls, value: bytes) -> bytes:
         return bytes([0xff ^ int.from_bytes(value, byteorder='big')])
-    
+
     def __bytes__(self) -> bytes:
         return bytes([self.value])
-    
-    
 
 
 
-    
-    
+
+
+
+
 # Magic numbers
 HEADERLEN = 3
 MAXBYTES  = 10**HEADERLEN
@@ -53,7 +53,7 @@ PORT = 10000
 ALT_PORT = 10001
 
 
-                
+
 def _to_packet(pb, chunk):
     return b'%s%*d%s' % (pb, HEADERLEN, len(chunk), chunk)
 
@@ -61,38 +61,38 @@ def ipackets(pb, b=None):
     msglen = 0 if b is None else len(b)
     if not msglen:
         yield pb
-        
+
     else:
         for i in range(0, msglen, MAXBYTES):
             yield _to_packet(pb, b[i: i + MAXBYTES])
-        
+
         if not msglen % MAXBYTES:
             yield _to_packet(pb, b'')
-            
-            
+
+
 class Protocol:
-        
+
     def send_close(self):
         self._send(bytes(PACKETS.CLOSE))
-    
+
     def recv_close(self, payload):
         self._client_sock.send(bytes(PACKETS.ACKCLOSE))
         raise BreakLoop()
-            
+
     # ----------- Helper Methods for sending and receiving --------------------
-        
+
     def _send(self, pb, b=None):
         """Helper method for sending packets."""
         try:
             for sp in ipackets(pb, b):
                 self._client_sock.send(sp)
-            
+
             if self._client_sock.recv(1) != PACKETS.get_ackb(pb):
                 raise OSError('The last command was not properly acknowledged')
         except:
             self._client_sock.close()
             raise
-            
+
     def _recv(self):
         try:
             d = self._client_sock.recv(1 + HEADERLEN)
@@ -108,17 +108,5 @@ class Protocol:
                 # Host has its own socket to close
                 self._sock.close()
             raise
-            
-        return pb, payload
 
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+        return pb, payload

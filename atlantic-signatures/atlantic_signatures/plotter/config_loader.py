@@ -52,7 +52,7 @@ class MissingConfigFileError(ConfigError):
                    )
         super(MissingConfigFileError, self).__init__(message)
 
-        
+
 
 BUILTINS = {}
 BUILTINS['north_atlantic_signatures'] = os.path.join('north_atlantic_signatures', 'data.zip')
@@ -72,11 +72,11 @@ def find_builtin_configs(builtin):
 
     if os.path.isdir(path):
         files = glob.glob(os.path.join(path, CONFIG_SIGNATURE), recursive=True)
-    
+
     if path.endswith('.zip'):
         with zipfile.ZipFile(path) as ziparchive:
             files = fnmatch.filter(ziparchive.namelist(), CONFIG_SIGNATURE)
-    
+
     return files
 
 
@@ -89,7 +89,7 @@ def get_data_file(config_file, *, config_file_path=None, extension='.csv'):
 
 def load_data_file(file):
     return np.loadtxt(file, skiprows=1, delimiter=',', unpack=True)
-    
+
 def load_zipped_data_file(file, zip_path):
     with zipfile.ZipFile(zip_path) as zipdir:
         with zipdir.open(file) as file:
@@ -119,20 +119,20 @@ class MetadataConfigParser(configparser.ConfigParser):
         return self._get_conv(section, option, self._convert_to_quantity,
                               raw=raw, vars=vars,
                               fallback=fallback, **kwargs)
-    
 
-    
+
+
 class InterpolatedMetadataConfigParser(configparser.ConfigParser):
     """
     Child class of ConfigParser that combines interpolation and a custom
     getter method for numbers combined with units (quantities).
     """
-    
+
     UNIT_RE   = re.compile(r"\([a-zA-Z0-9_\^\/]+\){0,1}")
     NUMBER_RE = re.compile(r"-{0,1}\d+(\.\d*)?")
-    
 
-    
+
+
     def _convert_to_quantity(self, value):
         unit = self.UNIT_RE.search(value)
         if unit is not None:
@@ -148,17 +148,17 @@ class InterpolatedMetadataConfigParser(configparser.ConfigParser):
         return self._get_conv(section, option, self._convert_to_quantity,
                               raw=raw, vars=vars,
                               fallback=fallback, **kwargs)
-    
+
     def get(self, section, option):
         value = super(InterpolatedMetadataConfigParser, self).get(section, option)
         if value.lower() in self.BOOLEAN_STATES:
             return self._convert_to_boolean(value)
-        
+
         unit = self.UNIT_RE.search(value)
         if unit is None:
             unit = getattr(ureg, unit.group(0), None)
 
-        
+
 
 class ConfigLoader(configparser.ConfigParser):
     def __init__(self, file, **kwargs):
@@ -168,7 +168,7 @@ class ConfigLoader(configparser.ConfigParser):
 
         if not os.path.exists(path):
             raise MissingConfigFileError(path, file)
-        
+
         if path.endswith('.zip'):
             with zipfile.ZipFile(path) as ziparchive:
                 with ziparchive.open(file) as zippedfile:
@@ -176,7 +176,7 @@ class ConfigLoader(configparser.ConfigParser):
         else:
             self.read(os.path.join(path, file))
 
-            
+
     def read_goal_properties(self, **defaults):
         cache = {}
         if not 'Goal Properties' in self.sections():
@@ -192,25 +192,25 @@ class ConfigLoader(configparser.ConfigParser):
                     unitstr = 'meter'
                 finally:
                     unit = getattr(ureg, unitstr)
-                
+
                 coords = [float(match.group(0)) for match in NUMBER_RE.finditer(valuestr)]
                 if len(coords) != 2:
                     raise InvalidConfigFormatError('A goal needs 2 coordinates to be a valid location')
-            
+
                 cache[option] = ureg.Quantity(coords, unit)
             else:
                 cache[option] = valuestr
 
         return cache
-    
+
     def getquantity(self, section, option, **kwargs):
         raw      = kwargs.pop('raw', False)
         vars     = kwargs.pop('vars', None)
         fallback = kwargs.pop('fallback', _UNSET)
-        
+
         try:
             value = self.get(section, option, raw=raw, vars=vars, fallback=fallback)
-            
+
             try:
                 unit = UNIT_RE.search(value)
                 assert unit in ureg
@@ -231,33 +231,4 @@ class ConfigLoader(configparser.ConfigParser):
         except (NoSectionError, NoOptionError, InvalidConfigFormatError):
             if fallback is _UNSET:
                 raise
-            return fallback           
-            
-
-
-
-
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-  
+            return fallback

@@ -1,7 +1,7 @@
 """
 Python configuration file that contains all the data structures necessary to
 generate a plot or plots with the formatting of the paper:
-    
+
  A bioinspired navigation strategy that uses magnetic signatures Q1 to navigate
  without GPS in a linearized northern Atlantic ocean: a simulation study
 
@@ -85,7 +85,7 @@ goal_marker_kwargs['linewidth'] = 1
 REQUIRED_CONFIG_SECTIONS = (
     'Field Properties',
     'Current Properties',
-    'Goal Properties', 
+    'Goal Properties',
     'Boundary Conditions',
     'Create Properties'
     )
@@ -145,15 +145,15 @@ CONFIG_OPTIONS = {
 if __name__ == '__main__':
     # Test plot with random data to visualize formatting
     import matplotlib.pyplot as plt
-    
+
     X = [0.0, 1.0, 2.0, -1.0]
     Y = [-1.0, 0.5, 1.2, 0.9]
-    
+
     Goals = [(0.7, -0.8), (1.7, 1.1), (-0.2, 0.8)]
-    
+
     fig, ax = plt.subplots()
     ax.plot(X, Y, color='black')
-    
+
     for num, goal in enumerate(Goals):
         ax.annotate('Marker %d' % num, goal)
         ax.plot(*goal, color='blue', marker='o', markeredgecolor='black', markersize=14, alpha=0.5)
@@ -162,31 +162,17 @@ if __name__ == '__main__':
 
     ax.set_xlim(**xboundary_kwargs)
     ax.set_ylim(**yboundary_kwargs)
-    
+
     title_kwargs['label'] = 'Roomba Trajectory Test'
     ax.set_title(**title_kwargs)
-    
+
     ax.set_xlabel(**xaxis_kwargs)
     ax.set_ylabel(**yaxis_kwargs)
-    
+
     ax.set_xticks(**xticks_kwargs)
     ax.set_yticks(**yticks_kwargs)
-    
+
     print(fig.dpi*fig.get_size_inches())
     fig.tight_layout()
-    
+
     plt.show()
-    
-    
-
-
-
-
-
-
-
-
-
-
-
-

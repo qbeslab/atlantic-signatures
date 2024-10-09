@@ -129,7 +129,7 @@ class Host(Protocol):
     def _start_vicon(self):
         try:
             self._vicon_client = ViconDataStream.Client()
-            self._vicon_client.Connect('localhost:801')
+            self._vicon_client.Connect('BIO-TAYLORL02-5820:801')
 
             print(
                 'Successfully connected to the Vicon system. Running Data '

@@ -136,7 +136,6 @@ class AnimatedPlot:
         config = ConfigLoader(file, **kwargs)
         #X, Y, THETA, TIME =
         a = load_zipped_data_file(get_data_file(file), zip_path=path)
-        print(a)
         X, Y, THETA, TIME = a
         X *= 0.001
         Y *= 0.001
@@ -187,7 +186,6 @@ class AnimatedPlot:
         #print(self.ax.get_window_extent().x1 - self.ax.get_window_extent().x0)
 
         goal_marker_kwargs['markersize'] = self.native_units_to_pts() * self.cache['Create Properties']['r_goal'].m
-        print(goal_marker_kwargs['markersize'])
         r_multi_kwargs['radius'] = self.cache['Create Properties']['r_multi'].m
 
         """
@@ -317,11 +315,13 @@ if __name__ == '__main__':
     testnum = 9
     date = '2020-03-04'
     plt.rcParams['animation.ffmpeg_path'] = os.path.join(os.path.expanduser('~'), 'ffmpeg-4.4-essentials_build', 'bin', 'ffmpeg')
-    vid_file = 'Test'
 
     with zipfile.ZipFile(BUILTIN_DATA_DIR) as zipdir:
         for cfgfile in zipdir.namelist():
-            if cfgfile.startswith(date) and cfgfile.endswith('.cfg') and os.path.basename(cfgfile).startswith('Test-%d' % testnum):
+            if cfgfile.startswith(date) and cfgfile.endswith('.cfg') and os.path.basename(cfgfile).startswith(f'Test-{testnum}'):
+                print(f'Animating "{cfgfile}" from "{BUILTIN_DATA_DIR}"...')
                 x = AnimatedPlot(cfgfile, t_multi=10)
-                x.save('Test-%d.gif' % testnum, fps=10)
+                outfile = f'Test-{testnum}.gif'
+                x.save(outfile, fps=10)
+                print(f'Saved "{outfile}" to current directory')
                 break

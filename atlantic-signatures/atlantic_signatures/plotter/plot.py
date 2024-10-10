@@ -131,7 +131,7 @@ r_goal_kwargs['linewidth'] = 1
 
 class AnimatedPlot:
     def __init__(self, file, **kwargs):
-        path = kwargs.setdefault('path', BUILTIN_DATA_DIR)
+        path = kwargs.setdefault('path', 'data.zip')
         self.t_multi = kwargs.pop('t_multi', 1)
         config = ConfigLoader(file, **kwargs)
         #X, Y, THETA, TIME =
@@ -308,19 +308,25 @@ class AnimatedPlot:
 
 
 if __name__ == '__main__':
+    import argparse
     import zipfile
     import os.path
-    BUILTIN_DATA_DIR = 'data.zip'
 
-    testnum = 9
-    date = '2020-03-04'
-    plt.rcParams['animation.ffmpeg_path'] = os.path.join(os.path.expanduser('~'), 'ffmpeg-4.4-essentials_build', 'bin', 'ffmpeg')
+    parser = argparse.ArgumentParser(description='Generate an animated plot of an experiment')
+    parser.add_argument('zipfile', help='The zip file containing data to plot')
+    parser.add_argument('date', help='The dated directory within the zip file containing the data')
+    parser.add_argument('testnum', help='The test number associated with the experiment to plot')
+    args = parser.parse_args()
 
-    with zipfile.ZipFile(BUILTIN_DATA_DIR) as zipdir:
+    zip_path = args.zipfile
+    date = args.date
+    testnum = int(args.testnum)
+
+    with zipfile.ZipFile(zip_path) as zipdir:
         for cfgfile in zipdir.namelist():
             if cfgfile.startswith(date) and cfgfile.endswith('.cfg') and os.path.basename(cfgfile).startswith(f'Test-{testnum}'):
-                print(f'Animating "{cfgfile}" from "{BUILTIN_DATA_DIR}"...')
-                x = AnimatedPlot(cfgfile, t_multi=10)
+                print(f'Animating "{cfgfile}" from "{zip_path}"...')
+                x = AnimatedPlot(cfgfile, path=zip_path, t_multi=10)
                 outfile = f'Test-{testnum}.gif'
                 x.save(outfile, fps=10)
                 print(f'Saved "{outfile}" to current directory')

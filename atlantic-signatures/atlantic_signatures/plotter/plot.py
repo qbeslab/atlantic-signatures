@@ -8,7 +8,6 @@ generate a plot or plots with the formatting of the paper:
 """
 
 import itertools
-import math
 from operator import attrgetter, itemgetter
 
 from matplotlib.animation import FuncAnimation
@@ -227,7 +226,7 @@ class AnimatedPlot:
         R = np.hypot(X, Y) + 1e-3
 
         a, b = (s_x/R)*(v_r*X - v_t*Y), (s_y/R)*(v_r*Y + v_t*X)
-        V_X, V_Y = a*math.cos(t_f) - b*math.sin(t_f), a*math.sin(t_f) + b*math.cos(t_f)
+        V_X, V_Y = a*np.cos(t_f) - b*np.sin(t_f), a*np.sin(t_f) + b*np.cos(t_f)
 
         self.ax.quiver(X, Y, V_X, V_Y, color='grey')
 
@@ -240,12 +239,12 @@ class AnimatedPlot:
         d_gamma = sum(i*j for i, j in zip(self.cache[sec]['gamma_0'].m, (a_int, b_int, c_int)))
 
         t_int = self.cache[sec]['theta_int'].to_base_units().m
-        t_inc = -1 * (math.pi/2 - t_int - self.cache[sec]['lambda'].to_base_units().m)
+        t_inc = -1 * (np.pi/2 - t_int - self.cache[sec]['lambda'].to_base_units().m)
 
         X, Y = np.meshgrid(np.linspace(*self.ax.get_xlim(), 5), np.linspace(*self.ax.get_ylim(), 5))
 
-        beta  = (eta/c_inc) * (d_beta  - a_inc*(X*math.cos(t_inc) + Y*math.sin(t_inc)) - b_inc*(Y*math.cos(t_inc) - X*math.sin(t_inc)))
-        gamma = (eta/c_int) * (d_gamma - a_int*(X*math.cos(t_int) + Y*math.sin(t_int)) - b_int*(Y*math.cos(t_int) - X*math.sin(t_int)))
+        beta  = (eta/c_inc) * (d_beta  - a_inc*(X*np.cos(t_inc) + Y*np.sin(t_inc)) - b_inc*(Y*np.cos(t_inc) - X*np.sin(t_inc)))
+        gamma = (eta/c_int) * (d_gamma - a_int*(X*np.cos(t_int) + Y*np.sin(t_int)) - b_int*(Y*np.cos(t_int) - X*np.sin(t_int)))
 
         Cb = self.ax.contour(X, Y, beta, **beta_kwargs)
         Cg = self.ax.contour(X, Y, gamma, **gamma_kwargs)

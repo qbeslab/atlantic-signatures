@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-from atlantic_signatures.plotter.config_loader import ConfigLoader, load_zipped_data_file, get_data_file, ureg
+from atlantic_signatures.plotter.config_loader import ConfigLoader, load_data_file, get_data_file, ureg
 from atlantic_signatures.plotter import defaults, colors
 
 #plt.rcParams['animation.ffmpeg_path'] = os.path.join(os.expan)
@@ -130,12 +130,11 @@ r_goal_kwargs['linewidth'] = 1
 
 
 class AnimatedPlot:
-    def __init__(self, file, **kwargs):
-        path = kwargs.setdefault('path', 'data.zip')
+    def __init__(self, config_file, csv_file, **kwargs):
         self.t_multi = kwargs.pop('t_multi', 1)
-        config = ConfigLoader(file, **kwargs)
+        config = ConfigLoader(config_file, **kwargs)
         #X, Y, THETA, TIME =
-        a = load_zipped_data_file(get_data_file(file), zip_path=path)
+        a = load_data_file(csv_file)
         X, Y, THETA, TIME = a
         X *= 0.001
         Y *= 0.001
@@ -308,26 +307,47 @@ class AnimatedPlot:
 
 
 if __name__ == '__main__':
+
     import argparse
-    import zipfile
+    import re
+    from pathlib import Path
+    import tempfile
     import os.path
 
     parser = argparse.ArgumentParser(description='Generate an animated plot of an experiment')
-    parser.add_argument('zipfile', help='The zip file containing data to plot')
-    parser.add_argument('date', help='The dated directory within the zip file containing the data')
-    parser.add_argument('testnum', help='The test number associated with the experiment to plot')
+    parser.add_argument('file', nargs='+', help='The input file to plot, created by an experiment (multiple files allowed)')
     args = parser.parse_args()
 
-    zip_path = args.zipfile
-    date = args.date
-    testnum = int(args.testnum)
+    for file in args.file:
+        file = Path(file)
+        print(f'Reading "{file}"')
 
-    with zipfile.ZipFile(zip_path) as zipdir:
-        for cfgfile in zipdir.namelist():
-            if cfgfile.startswith(date) and cfgfile.endswith('.cfg') and os.path.basename(cfgfile).startswith(f'Test-{testnum}'):
-                print(f'Animating "{cfgfile}" from "{zip_path}"...')
-                x = AnimatedPlot(cfgfile, path=zip_path, t_multi=10)
-                outfile = f'Test-{testnum}.gif'
-                x.save(outfile, fps=10)
-                print(f'Saved "{outfile}" to current directory')
-                break
+        with (open(file, 'r', buffering=1) as input_file,
+              tempfile.TemporaryFile(mode='w', delete_on_close=False) as config_file,
+              tempfile.TemporaryFile(mode='w', delete_on_close=False) as csv_file):
+
+            # walk through the input file to where the CSV content starts,
+            # copying what comes before into a temporary config file, and what
+            # comes after into a temporary CSV file
+            CSV_HEADER_RE = re.compile(r'([a-zA-Z]+\s\([a-zA-Z]+\)\s*,*\s*)+')
+            csv_header_found = False
+            for line in input_file:
+                if not csv_header_found:
+                    csv_header_found = (CSV_HEADER_RE.match(line) is not None)
+                if not csv_header_found:
+                    config_file.write(line)
+                else:
+                    csv_file.write(line)
+
+            # close the temp files so that they can be read by AnimatedPlot
+            config_file.close()
+            csv_file.close()
+
+            print(f'Animating "{file}"')
+            x = AnimatedPlot(config_file.name, csv_file.name, t_multi=10)
+
+            out_file = str(file.parent / (file.stem + '.gif'))
+            x.save(out_file, fps=10)
+            print(f'Saved "{out_file}"')
+
+        print()

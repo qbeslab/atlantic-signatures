@@ -50,7 +50,7 @@ class Host(Protocol):
         test_num = 1
 
         for file in os.listdir(DATA_DIR):
-            if file.startswith('Test'):
+            if file.startswith('Test') and file.endswith('.csv'):
                 test_num += 1
 
         self._data_file = open(os.path.join(DATA_DIR, 'Test-%d.csv' % test_num), 'w')

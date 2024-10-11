@@ -26,6 +26,5 @@ atlantic-signatures
     # run an experiment (run on client, wait 5 secs, then run on host)
     atlantic_signatures run
 
-    # build the docs (after which they can be found in docs\_build\html\index.html)
-    cd atlantic-signatures\docs
-    make clean && make html
+    # build the docs (after which they can be found in atlantic-signatures\docs\_build\html\index.html)
+    make -C atlantic-signatures\docs clean && make -C atlantic-signatures\docs html

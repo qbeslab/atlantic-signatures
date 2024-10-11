@@ -1,7 +1,9 @@
-include README.rst
+include LICENSE.txt
 include MANIFEST.in
-include setup.py
+include README.rst
+include requirements.txt
 include setup.cfg
+include setup.py
 include VERSION.txt
 
 # all pycache files are to be excluded
@@ -12,3 +14,8 @@ global-include *.pyd
 
 include atlantic_signatures/units/units.txt
 include atlantic_signatures/demo.cfg
+include atlantic_signatures/plotter/colors/data/*.csv
+
+include vicon_dssdk/LICENSE
+include vicon_dssdk/README.rst
+include vicon_dssdk/VERSION

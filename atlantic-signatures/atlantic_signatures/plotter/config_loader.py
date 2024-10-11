@@ -55,7 +55,7 @@ class MissingConfigFileError(ConfigError):
 
 
 BUILTINS = {}
-BUILTINS['north_atlantic_signatures'] = os.path.join('north_atlantic_signatures', 'data.zip')
+# BUILTINS['north_atlantic_signatures'] = os.path.join('north_atlantic_signatures', 'data.zip')
 
 CONFIG_SIGNATURE = '*.cfg'
 

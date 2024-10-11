@@ -1,5 +1,5 @@
 """
-mycreate_plotter.colors module contains color maps and factory functions for
+plotter.colors module contains color maps and factory functions for
 generating colors as found in the various papers/posters/presentations of
 the QBES lab.
 """

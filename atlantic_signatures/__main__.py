@@ -10,24 +10,23 @@ from pathlib import Path
 import tempfile
 import re
 
-from atlantic_signatures.client import Client
-from atlantic_signatures.host import Host
-from atlantic_signatures.plotter.plot import AnimatedPlot
-
 
 # assume we are running as host if the OS is Windows
 RUNNING_AS_HOST = os.environ.get('RUNNING_AS_HOST', sys.platform == 'win32')
 
 
 def host_run(args):
+    from atlantic_signatures.host import Host
     return Host(config_file=args.config_file, objectname=args.objectname, host=args.host, timeout=args.timeout)
 
 
 def client_run(args):
+    from atlantic_signatures.client import Client
     return Client(host=args.host)
 
 
 def plot_animated(args):
+    from atlantic_signatures.plotter.plot import AnimatedPlot
     for file in args.file:
         file = Path(file)
         print(f'Reading "{file}"')

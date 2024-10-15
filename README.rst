@@ -5,10 +5,10 @@ atlantic-signatures
 .. code-block:: bash
 
     # create an anaconda environment and install dependencies
-    conda create -n robots -c conda-forge python=3.12 matplotlib sphinx sphinx_rtd_theme make ffmpeg git
+    conda create -n atlantic-signatures -c conda-forge python=3.12 matplotlib sphinx sphinx_rtd_theme make ffmpeg git
 
     # activate the environment
-    conda activate robots
+    conda activate atlantic-signatures
 
     # download the package source code
     git clone https://github.com/qbeslab/atlantic-signatures.git

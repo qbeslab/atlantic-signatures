@@ -1,13 +1,10 @@
 #!/bin/bash
 #
 # Bash script to automate the setup of a python virtual environment with all the
-# dependecies of the atlantc_signatures project
-#
-# This script should be run using source! Running normally with bash will activate
-# the virtual environment in a new shell
+# dependecies of the atlantic_signatures project
 
 # The directory of the atlantic_signatures/
-# This should be /home/pi/atlantic-signatures but we cannot assume the user
+# This should be /home/pi/atlantic_signatures but we cannot assume the user
 # won't accidentally transfer the package to a different directory
 BASEDIR=`realpath $0 | xargs dirname | xargs dirname`
 VENVDIR="$BASEDIR/venv"

@@ -39,7 +39,7 @@ class Host(Protocol):
             self.tracking_object = (objectname, objectname)
 
         self._timeout = timeout
-        self._host = self._get_proper_ip() if host is None else host
+        self._host = self.get_proper_ip() if host is None else host
 
         if not isinstance(self._host, str):
             raise OSError('Invalid wireless address')

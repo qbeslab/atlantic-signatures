@@ -184,7 +184,8 @@ class AnimatedPlot:
         #print(self.ax.get_window_extent().inverse_transformed(plt.gca().transData))
         #print(self.ax.get_window_extent().x1 - self.ax.get_window_extent().x0)
 
-        goal_marker_kwargs['markersize'] = self.native_units_to_pts() * self.cache['Create Properties']['r_goal'].m
+        # goal_marker_kwargs['markersize'] = self.native_units_to_pts() * self.cache['Create Properties']['r_goal'].m
+        r_goal_kwargs['radius'] = self.cache['Create Properties']['r_goal'].m
         r_multi_kwargs['radius'] = self.cache['Create Properties']['r_multi'].m
 
         """

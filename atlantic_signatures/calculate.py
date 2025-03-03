@@ -80,11 +80,21 @@ class Field:
             raise ValueError('Error all three values: theta_inc, theta_int, '
                              'and lambda are defined')
 
+        # Taylor et al. 2021 Bioinspir. Biomim., Eq. 8:
+        #     delta = -(90 deg - theta - lambda)
+        # where for this code
+        #     delta --> theta_inc
+        #     theta --> theta_int
+        # Therefore:
+        #     theta_inc = -(90 deg - theta_int - lambda)
+        # and
+        #     theta_int = theta_inc - lambda - 90 deg
+
         elif _theta_inc and _lambda:
-            _theta_int = _theta_inc - _lambda
+            _theta_int = _theta_inc - _lambda - np.pi/2
 
         elif _theta_int and _lambda:
-            _theta_inc = _theta_int + _lambda
+            _theta_inc = -(np.pi/2 - _theta_int - _lambda)
 
         elif _theta_inc and _theta_int:
             pass
@@ -107,11 +117,11 @@ class Field:
         d_beta  = sum(i*j for i, j in zip(self._beta_0, (self._a_inc, self._b_inc, self._c_inc)))
         d_gamma = sum(i*j for i, j in zip(self._gamma_0, (self._a_int, self._b_int, self._c_int)))
 
-        def _func(a, b, c, d, t):
-            return (self._eta/c)*(d - a*(X*math.cos(t) + Y*math.sin(t)) - b*(Y*math.cos(t) - X*math.sin(t)))
+        def _func(a, b, c, d, e, t):
+            return (e/c)*(d - a*(X*math.cos(t) + Y*math.sin(t)) - b*(Y*math.cos(t) - X*math.sin(t)))
 
-        Beta = _func(self._a_inc, self._b_inc, self._c_inc, d_beta, self._theta_inc)
-        Gamma = _func(self._a_int, self._b_int, self._c_int, d_gamma, self._theta_int)
+        Beta = _func(self._a_inc, self._b_inc, self._c_inc, d_beta, self._eta, self._theta_inc)
+        Gamma = _func(self._a_int, self._b_int, self._c_int, d_gamma, 1, self._theta_int)  # gamma's eta is always 1 -- negated sensing affects beta only
 
         return Beta, Gamma
 

@@ -103,11 +103,6 @@ class Field:
     def point_calculate(self, x, y):
         pass
 
-    def _calculate(self, x, y, a, b, c, t, org_value):
-        d = sum(i*j for i, j in zip(org_value, (a, b, c)))
-
-        return (self._eta/c)*(d-a*(x*math.cos(t)+y*math.sin(t))-b*(y*math.cos(t)-x*math.sin(t)))
-
     def mesh_calculate(self, X, Y):
         d_beta  = sum(i*j for i, j in zip(self._beta_0, (self._a_inc, self._b_inc, self._c_inc)))
         d_gamma = sum(i*j for i, j in zip(self._gamma_0, (self._a_int, self._b_int, self._c_int)))

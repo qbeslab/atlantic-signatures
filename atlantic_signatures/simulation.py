@@ -202,7 +202,7 @@ class Simulation:
             self.move_create(self._velocity * dx + x_current, self._velocity * dy + y_current)
         else:
             beta, gamma = self._field_calculator.mesh_calculate(x, y)
-            beta_diff, gamma_diff = beta - self._beta_goal, gamma - self._gamma_goal
+            beta_diff, gamma_diff = self._beta_goal - beta, self._gamma_goal - gamma
             magnitude = sqrt(beta_diff**2 + gamma_diff**2)
 
             dx, dy = beta_diff / magnitude, gamma_diff / magnitude

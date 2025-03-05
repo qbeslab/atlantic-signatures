@@ -26,6 +26,13 @@ def client_run(args):
     return Client(host=args.host)
 
 
+def sim_run(args):
+    from math import pi
+    from atlantic_signatures.simulation import Simulation
+    theta0_radians = args.theta0 * pi / 180  # convert degrees to radians
+    sim = Simulation(x0=args.x0, y0=args.y0, theta0=theta0_radians, config_file=args.config_file)
+
+
 def plot_animated(args):
     from atlantic_signatures.plotter.plot import AnimatedPlot
     for file in args.file:
@@ -110,6 +117,18 @@ def get_parser():
             help='IP address for the host computer'
         )
         run_parser.set_defaults(func=client_run)
+
+    sim_parser = command_subparser.add_parser('sim', description='Run a simulation of an experiment', help='Run a simulation of an experiment')
+    sim_parser.add_argument('x0', type=float, help='Initial x-coordinate of the simulated robot (in millimeters)')
+    sim_parser.add_argument('y0', type=float, help='Initial y-coordinate of the simulated robot (in millimeters)')
+    sim_parser.add_argument('theta0', type=float, nargs='?', default=0.0, help='(Optional) Initial heading of the simulated robot (in degrees; default: 0, East)')
+    sim_parser.add_argument(
+        '--file', '-f',
+        dest='config_file',
+        default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'demo.cfg'),
+        help='The file containing all test parameters',
+    )
+    sim_parser.set_defaults(func=sim_run)
 
     plot_parser = command_subparser.add_parser('plot', description='Generate an animated plot of an experiment', help='Generate an animated plot of an experiment')
     plot_parser.add_argument('file', nargs='+', help='The input file to plot, created by an experiment (multiple files allowed)')

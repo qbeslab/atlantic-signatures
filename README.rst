@@ -20,6 +20,9 @@ atlantic-signatures
     # test that the atlantic_signatures command is installed
     atlantic_signatures --help
 
+    # run a simulation with a virtual robot starting northwest of the origin
+    atlantic_signatures sim -200 200
+
     # create an animated plot from a data file (test file required)
     atlantic_signatures plot Test-1.csv
 

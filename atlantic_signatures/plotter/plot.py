@@ -138,7 +138,7 @@ class AnimatedPlot:
         X, Y, THETA, TIME = a
         X *= 0.001
         Y *= 0.001
-        self.X, self.Y, self.T = X, Y, TIME
+        self.X, self.Y, self.THETA, self.T = X, Y, THETA, TIME
         self.data = (X, Y, TIME)
         self.t0 = TIME[0]
 
@@ -253,6 +253,7 @@ class AnimatedPlot:
 
     def start_animation(self):
         self.line, = self.ax.plot([], [], color='black', linewidth=2, solid_capstyle='round')
+        self.heading = self.ax.annotate('', xytext=(0, 0), xy=(0.5, 0.5), arrowprops=dict(shrink=0.3, color='red', width=1, headwidth=4, headlength=4))
         #self.anim = FuncAnimation(self.fig, self.update_animation, self.gen_func, interval=self.t0)
         self.anim = FuncAnimation(self.fig, self.update_animation_mk2,
                                   frames=np.arange(0, len(self.T), 10))
@@ -267,7 +268,10 @@ class AnimatedPlot:
         self.t0 = t
 
         self.line.set_data(self.X[:i], self.Y[:i])
-        return self.line,
+        self.heading.set_x(self.X[i])
+        self.heading.set_y(self.Y[i])
+        self.heading.xy = (self.X[i] + 0.3 * np.cos(self.THETA[i]), self.Y[i] + 0.3 * np.sin(self.THETA[i]))
+        return self.line, self.heading
 
     def update_animation_mk2(self, i):
         t = self.T[i]
@@ -279,7 +283,10 @@ class AnimatedPlot:
         self.t0 = t
 
         self.line.set_data(self.X[:i], self.Y[:i])
-        return self.line,
+        self.heading.set_x(self.X[i])
+        self.heading.set_y(self.Y[i])
+        self.heading.xy = (self.X[i] + 0.3 * np.cos(self.THETA[i]), self.Y[i] + 0.3 * np.sin(self.THETA[i]))
+        return self.line, self.heading
 
 
     def native_units_to_pts(self):

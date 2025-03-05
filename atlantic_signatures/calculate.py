@@ -76,7 +76,7 @@ class Field:
         _theta_int = kwargs.get('theta_int')
         _lambda    = kwargs.get('lambda')
 
-        if _theta_inc and _theta_int and _lambda:
+        if _theta_inc is not None and _theta_int is not None and _lambda is not None:
             raise ValueError('Error all three values: theta_inc, theta_int, '
                              'and lambda are defined')
 
@@ -90,13 +90,13 @@ class Field:
         # and
         #     theta_int = theta_inc - lambda - 90 deg
 
-        elif _theta_inc and _lambda:
+        elif _theta_inc is not None and _lambda is not None:
             _theta_int = _theta_inc - _lambda - np.pi/2
 
-        elif _theta_int and _lambda:
+        elif _theta_int is not None and _lambda is not None:
             _theta_inc = -(np.pi/2 - _theta_int - _lambda)
 
-        elif _theta_inc and _theta_int:
+        elif _theta_inc is not None and _theta_int is not None:
             pass
 
         else:

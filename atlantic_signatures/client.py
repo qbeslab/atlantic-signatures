@@ -8,7 +8,7 @@ from __future__ import absolute_import
 
 from collections import deque
 import json
-from math import atan2, pi, sqrt
+from math import acos, atan2, copysign, cos, pi, sin, sqrt
 import socket
 import time
 
@@ -178,13 +178,12 @@ class Client(Protocol):
         # the direction vector:
 
         desired_angle = atan2(vy, vx)
-        delta = (self._pose['theta'] + desired_angle + pi/2) % 2*pi
-        p = 20
-        if delta > self._angle_cutoff:
-            if delta < pi:
-                turn_v, r = p*(pi - delta), 'rotate_cw'
+        delta = copysign(acos(cos(desired_angle - self._pose['theta'])), sin(desired_angle - self._pose['theta']))
+        if abs(delta) > self._angle_cutoff:
+            if delta < 0:
+                turn_v, r = -delta, 'rotate_cw'
             else:
-                turn_v, r = p * (delta - pi), 'rotate_ccw'
+                turn_v, r = delta, 'rotate_ccw'
             self._create._drive(max(turn_v, 30), r=r)
             time.sleep(0.1)
 

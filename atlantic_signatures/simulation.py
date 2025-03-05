@@ -3,7 +3,7 @@
 """
 from collections import deque
 import json
-from math import atan2, cos, sin, pi, sqrt
+from math import acos, atan2, copysign, cos, pi, sin, sqrt
 import os
 import time
 
@@ -226,17 +226,14 @@ class Simulation:
         # the direction vector:
 
         desired_angle = atan2(vy, vx)
-        delta = (self._pose['theta'] + desired_angle + pi/2) % 2*pi
-        p = 20
-        if delta > self._angle_cutoff:
-            if delta < pi:
-                turn_v, r = p*(pi - delta), 'rotate_cw'
-                self.simulate_turn(0.001 * turn_v * -1)  # SIMPLIFIED FOR SIMULATION, small coefficient out front prevents oversteering
-            else:
-                turn_v, r = p * (delta - pi), 'rotate_ccw'
-                self.simulate_turn(0.001 * turn_v * +1)  # SIMPLIFIED FOR SIMULATION, small coefficient out front prevents oversteering
+        delta = copysign(acos(cos(desired_angle - self._pose['theta'])), sin(desired_angle - self._pose['theta']))
+        if abs(delta) > self._angle_cutoff:
+            # if delta < 0:
+            #     turn_v, r = -delta, 'rotate_cw'
+            # else:
+            #     turn_v, r = delta, 'rotate_ccw'
             # self._create._drive(max(turn_v, 30), r=r)
-
+            self.simulate_turn(0.1 * delta)  # SIMPLIFIED FOR SIMULATION, small coefficient allows for angle_cutoff to have a more realistic effect
             # time.sleep(0.1)  # REMOVED FOR SIMULATION
 
         else:

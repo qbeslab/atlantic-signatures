@@ -18,6 +18,7 @@ import numpy as np
 
 from atlantic_signatures.plotter.config_loader import ConfigLoader, load_data_file, get_data_file, ureg
 from atlantic_signatures.plotter import defaults, colors
+from atlantic_signatures.calculate import Current, Field
 
 #plt.rcParams['animation.ffmpeg_path'] = os.path.join(os.expan)
 
@@ -211,38 +212,18 @@ class AnimatedPlot:
         # plt.show()
 
     def add_current(self):
-        sec = 'Current Properties'
-
-        s_x = self.cache[sec]['s_x']
-        s_y = self.cache[sec]['s_y']
-        v_t = self.cache[sec]['v_theta'].m
-        v_r = self.cache[sec]['v_radial'].m
-        t_f = self.cache[sec]['theta_fluid'].to_base_units().m
-
-
         X, Y = np.meshgrid(np.linspace(*self.ax.get_xlim(), 20), np.linspace(*self.ax.get_ylim(), 20))
-        R = np.hypot(X, Y) + 1e-3
 
-        a, b = (s_x/R)*(v_r*X - v_t*Y), (s_y/R)*(v_r*Y + v_t*X)
-        V_X, V_Y = a*np.cos(t_f) - b*np.sin(t_f), a*np.sin(t_f) + b*np.cos(t_f)
+        current = Current.from_cache(self.cache)
+        V_X, V_Y = current.mesh_calculate(X, Y)
 
         self.ax.quiver(X, Y, V_X, V_Y, color='grey')
 
     def add_beta_gamma(self):
-        sec = 'Field Properties'
-        getter = itemgetter('a_inc', 'b_inc', 'c_inc', 'a_int', 'b_int', 'c_int', 'eta')
-        a_inc, b_inc, c_inc, a_int, b_int, c_int, eta = getter(self.cache[sec])
-
-        d_beta  = sum(i*j for i, j in zip(self.cache[sec]['beta_0'].m, (a_inc, b_inc, c_inc)))
-        d_gamma = sum(i*j for i, j in zip(self.cache[sec]['gamma_0'].m, (a_int, b_int, c_int)))
-
-        t_int = self.cache[sec]['theta_int'].to_base_units().m
-        t_inc = -1 * (np.pi/2 - t_int - self.cache[sec]['lambda'].to_base_units().m)
-
         X, Y = np.meshgrid(np.linspace(*self.ax.get_xlim(), 5), np.linspace(*self.ax.get_ylim(), 5))
 
-        beta  = (eta/c_inc) * (d_beta  - a_inc*(X*np.cos(t_inc) + Y*np.sin(t_inc)) - b_inc*(Y*np.cos(t_inc) - X*np.sin(t_inc)))
-        gamma = (eta/c_int) * (d_gamma - a_int*(X*np.cos(t_int) + Y*np.sin(t_int)) - b_int*(Y*np.cos(t_int) - X*np.sin(t_int)))
+        field = Field.from_cache(self.cache)
+        beta, gamma = field.mesh_calculate(X, Y)
 
         Cb = self.ax.contour(X, Y, beta, **beta_kwargs)
         Cg = self.ax.contour(X, Y, gamma, **gamma_kwargs)

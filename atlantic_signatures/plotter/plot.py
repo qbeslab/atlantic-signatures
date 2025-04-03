@@ -170,6 +170,10 @@ class AnimatedPlot:
 
                 self.cache[section][option] = id_map[id](section, option, **kwargs)
 
+        xboundary_kwargs['xmin'] = self.cache['Boundary Conditions']['x_min'].m
+        xboundary_kwargs['xmax'] = self.cache['Boundary Conditions']['x_max'].m
+        yboundary_kwargs['ymin'] = self.cache['Boundary Conditions']['y_min'].m
+        yboundary_kwargs['ymax'] = self.cache['Boundary Conditions']['y_max'].m
 
         self.fig = plt.figure(figsize=(5.5, 5.5))
         self.ax = self.fig.add_subplot(1, 1, 1)

@@ -141,12 +141,14 @@ class Simulation:
 
         # Save some important parameters as attributes
         self._goals = deque(self._config['Goal Properties'].values())
+        self._goal_count = len(self._goals)
         self._velocity = self._config['Create Properties']['linear_velocity']
         self._time_step = self._config['Create Properties']['agent_time_step']
         self._angle_cutoff = self._config['Create Properties']['angle_cutoff']
         self._r_goal = self._config['Create Properties']['r_goal']
         self._r_multi = self._config['Create Properties']['r_multi']
 
+        self._current_goal_number = 0
         self._update_goal()
 
     def _update_goal(self):
@@ -158,8 +160,9 @@ class Simulation:
             x, y = self._goals.popleft()
             self._x_goal, self._y_goal = x, y
             self._beta_goal, self._gamma_goal = self._field_calculator.mesh_calculate(x, y)
+            self._current_goal_number += 1
         else:
-            print('we have reached all goals...')
+            print('We have reached all goals...')
             print('Ending connection with host')
             # self.send_close()  # REMOVED FOR SIMULATION
             raise BreakLoop
@@ -192,7 +195,7 @@ class Simulation:
         x_current, y_current = self._current_calculator.point_calculate(x, y)
 
         if d_goal <= self._r_goal:
-            print('Reached goal')
+            print(f'Reached goal {self._current_goal_number} of {self._goal_count}')
             self._update_goal()
 
         elif d_goal <= self._r_multi:

@@ -192,7 +192,7 @@ class Client(Protocol):
 
         else:
             self._create._drive(V, r='straight')
-            time.sleep(1)
+            time.sleep(self._time_step)
 
     def recv_start(self, payload):
         """

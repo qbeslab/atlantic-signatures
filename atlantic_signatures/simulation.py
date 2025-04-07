@@ -241,8 +241,8 @@ class Simulation:
 
         else:
             # self._create._drive(V, r='straight')
-            self.simulate_straight(V)  # SIMPLIFIED FOR SIMULATION
-            # time.sleep(1)  # REMOVED FOR SIMULATION
+            self.simulate_straight(self._time_step * V)  # SIMPLIFIED FOR SIMULATION
+            # time.sleep(self._time_step)  # REMOVED FOR SIMULATION
 
     ############################################################################
     # SIMULATED MOVEMENT EXECUTION                                             #

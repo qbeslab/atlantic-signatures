@@ -175,6 +175,10 @@ class Client(Protocol):
 
         V = int(sqrt(vx**2 + vy**2))
 
+        if V < 11:
+            print(f'requested velocity too low, setting to min speed for Create: {V} -> 11')
+            V = 11
+
         # Small epsilon added to vx to avoid division by zero
         if vx == 0:
             vx = 1e-6

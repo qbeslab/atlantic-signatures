@@ -181,7 +181,7 @@ class Simulation:
         global X-axis.
         """
         data = json.loads(payload)
-        print(data)
+        print("x: {x:+8.02f},    y: {y:+8.02f},    theta: {theta:+5.02f}".format(**data))
         self._pose.update(data)
         # self._client_sock.send(bytes(PACKETS.ACKDATA))  # REMOVED FOR SIMULATION
         if not rotating:
@@ -195,7 +195,10 @@ class Simulation:
         x_current, y_current = self._current_calculator.point_calculate(x, y)
 
         if d_goal <= self._r_goal:
+            print()
             print(f'Reached goal {self._current_goal_number} of {self._goal_count}')
+            print()
+            time.sleep(0.3)  # ADDED FOR SIMULATION
             self._update_goal()
 
         elif d_goal <= self._r_multi:

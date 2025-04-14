@@ -133,7 +133,7 @@ class Client(Protocol):
         global X-axis.
         """
         data = json.loads(payload)
-        print(data)
+        print("x: {x:+8.02f},    y: {y:+8.02f},    theta: {theta:+5.02f}".format(**data))
         self._pose.update(data)
         self._client_sock.send(bytes(PACKETS.ACKDATA))
         if not rotating:
@@ -147,7 +147,9 @@ class Client(Protocol):
         x_current, y_current = self._current_calculator.point_calculate(x, y)
 
         if d_goal <= self._r_goal:
+            print()
             print(f'Reached goal {self._current_goal_number} of {self._goal_count}')
+            print()
             self._update_goal()
 
         elif d_goal <= self._r_multi:

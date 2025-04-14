@@ -250,7 +250,7 @@ class Simulation:
 
     def simulate_turn(self, angle):
         self._new_pose = self._pose
-        self._new_pose['theta'] += angle
+        self._new_pose['theta'] = (self._new_pose['theta'] + angle + pi) % (2*pi) - pi
 
     def simulate_straight(self, distance):
         self._new_pose = self._pose

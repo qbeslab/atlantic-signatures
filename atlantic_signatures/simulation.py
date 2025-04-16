@@ -6,6 +6,7 @@ import json
 from math import acos, atan2, copysign, cos, pi, sin, sqrt
 import os
 import time
+import numpy as np
 
 from atlantic_signatures.calculate import Current, Field
 from atlantic_signatures.config_loader import config_to_dict, Loader
@@ -147,6 +148,7 @@ class Simulation:
         self._angle_cutoff = self._config['Create Properties']['angle_cutoff']
         self._r_goal = self._config['Create Properties']['r_goal']
         self._r_multi = self._config['Create Properties']['r_multi']
+        self._multimodal_method = self._config['Create Properties']['multimodal_method']
 
         self._current_goal_number = 0
         self._update_goal()
@@ -202,10 +204,53 @@ class Simulation:
             self._update_goal()
 
         elif d_goal <= self._r_multi:
-            magnitude = d_goal
-            dx, dy = x_diff / magnitude, y_diff / magnitude
+            possible_methods = ['direct', 'optimized_grid_search']
 
-            self.move_create(self._velocity * dx + x_current, self._velocity * dy + y_current)
+            match self._multimodal_method:
+                case 'direct':
+                    # DIRECT PATHING METHOD
+                    magnitude = d_goal
+                    dx, dy = x_diff / magnitude, y_diff / magnitude
+                    self.move_create(self._velocity * dx + x_current, self._velocity * dy + y_current)
+
+                case 'optimized_grid_search':
+                    # OPTIMIZED PATHING METHOD VIA GRID SEARCH
+                    c = np.array([x_current, y_current])  # ocean current vector
+                    d = np.array([x_diff, y_diff])  # vector from agent to goal
+
+                    def objective(u, c, d):
+                        # given a hypothetical unit vector u, compute the agent's net
+                        # velocity if it tried to travel in that direction
+                        v_net = self._velocity * u + c
+
+                        # return cos(theta) of the angle between the net velocity and the
+                        # vector to the goal, for maximization (thereby minimizing theta)
+                        return np.dot(v_net, d) / (np.linalg.norm(v_net) * np.linalg.norm(d))
+
+                    def optimal_heading(c, d, num_points):
+                        best_objective = -np.inf
+                        optimal_u = None
+
+                        # generate a grid of points on the unit circle
+                        theta = np.linspace(-np.pi, np.pi, num_points)
+                        unit_circle_points = np.vstack((np.cos(theta), np.sin(theta))).T
+
+                        # evaluate the objective function at each point
+                        for u in unit_circle_points:
+                            this_objective = objective(u, c, d)
+                            if this_objective > best_objective:
+                                best_objective = this_objective
+                                optimal_u = u
+
+                        return optimal_u
+
+                    num_points = 360  # affects angular resolution
+                    dx, dy = optimal_heading(c, d, num_points)
+                    self.move_create(self._velocity * dx + x_current, self._velocity * dy + y_current)
+
+                case _:
+                    raise ValueError(f"unrecognized multimodal pathing method: '{self._multimodal_method}', valid options: {possible_methods}")
+
         else:
             beta, gamma = self._field_calculator.mesh_calculate(x, y)
             beta_diff, gamma_diff = self._beta_goal - beta, self._gamma_goal - gamma

@@ -65,7 +65,7 @@ class Simulation:
                 #     self.send_data()
                 self.send_data()  # SIMPLIFIED FOR SIMULATION
 
-            # except (BreakLoop, socket.timeout):
+            # except (BreakLoop, TimeoutError):
             except (BreakLoop):  # SIMPLIFIED FOR SIMULATION
                 # self._sock.close()  # REMOVED FOR SIMULATION
                 break

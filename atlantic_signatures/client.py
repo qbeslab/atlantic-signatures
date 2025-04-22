@@ -39,7 +39,7 @@ class Client(Protocol):
     def start(self):
         try:
             self._client_sock.connect((self._host, PORT))
-        except socket.timeout:
+        except TimeoutError:
             self._client_sock.connect((self._host, ALT_PORT))
 
         while True:

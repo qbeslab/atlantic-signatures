@@ -102,7 +102,7 @@ class Protocol:
             else:
                 payload = b''
 
-        except socket.timeout:
+        except TimeoutError:
             self._client_sock.close()
             if hasattr(self, '_sock'):
                 # Host has its own socket to close

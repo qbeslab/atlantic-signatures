@@ -87,7 +87,7 @@ class Host(Protocol):
                 if w:
                     self.send_data()
 
-            except (BreakLoop, socket.timeout):
+            except (BreakLoop, TimeoutError):
                 self._sock.close()
                 break
 
@@ -119,7 +119,7 @@ class Host(Protocol):
                 self._client_sock, addr = self._sock.accept()
                 print('Connected to client at: {}'.format(addr))
                 break
-            except socket.timeout as err:
+            except TimeoutError as err:
                 if raise_err:
                     self._sock.close()
                     err.args = ("Some connection error occured", )

@@ -29,19 +29,34 @@ class Client(Protocol):
         self._finished = False
         self._config = {}
 
-        self._client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._client_sock.settimeout(kwargs.get('timeout', 10))
+        raise_err = False
+        for port in (PORT, ALT_PORT):
+            if hasattr(self, '_client_sock'):
+                self._client_sock.close()
+
+            if port == ALT_PORT:
+                print(
+                'Failed to connect to host at default port: %d\nAttempting '
+                'connection at the alternative port: %d' % (PORT, ALT_PORT)
+                )
+                raise_err = True
+
+            try:
+                self._client_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self._client_sock.settimeout(kwargs.get('timeout', 10))
+                self._client_sock.connect((self._host, port))
+                print(f'Connected to host at: {host}:{port}')
+                break
+            except TimeoutError:
+                if raise_err:
+                    self._client_sock.close()
+                    raise
 
         self._create = Create(kwargs.get('serialport'))
 
         self.start()
 
     def start(self):
-        try:
-            self._client_sock.connect((self._host, PORT))
-        except TimeoutError:
-            self._client_sock.connect((self._host, ALT_PORT))
-
         while True:
             try:
                 self.read_loop()

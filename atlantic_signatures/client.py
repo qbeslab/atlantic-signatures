@@ -64,6 +64,8 @@ class Client(Protocol):
             pass
         except TimeoutError:
             print('Connection to host timed out')
+        except KeyboardInterrupt:
+            print('KeyboardInterrupt issued by user')
         except Exception as err:
             show_traceback = True
             if not show_traceback:

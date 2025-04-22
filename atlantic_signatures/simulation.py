@@ -68,6 +68,8 @@ class Simulation:
             pass
         except TimeoutError:
             print('Connection to client timed out')
+        except KeyboardInterrupt:
+            print('KeyboardInterrupt issued by user')
         except Exception as err:
             show_traceback = True
             if not show_traceback:

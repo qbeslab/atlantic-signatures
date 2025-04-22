@@ -78,20 +78,28 @@ class Host(Protocol):
         self.send_loop()
 
     def send_loop(self):
-        while True:
-            try:
+        try:
+            while True:
                 r, w, _ = select.select([self._sock], [self._client_sock], [])
                 if r:
                     self.recv_close(None)
 
                 if w:
                     self.send_data()
-
-            except (BreakLoop, TimeoutError):
-                self._sock.close()
-                break
-
-
+        except BreakLoop:
+            pass
+        except TimeoutError:
+            print('Connection to client timed out')
+        except Exception as err:
+            show_traceback = True
+            if not show_traceback:
+                print(f'Unexpected exception raised: {err}')
+            else:
+                raise
+        finally:
+            # always cleanly close the socket
+            self._sock.close()
+            print('Socket has been closed')
 
     def _start_host(self):
         raise_err = False

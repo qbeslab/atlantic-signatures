@@ -57,14 +57,27 @@ class Client(Protocol):
         self.start()
 
     def start(self):
-        while True:
-            try:
+        try:
+            while True:
                 self.read_loop()
-            except BreakLoop:
-                break
+        except BreakLoop:
+            pass
+        except TimeoutError:
+            print('Connection to host timed out')
+        except Exception as err:
+            show_traceback = True
+            if not show_traceback:
+                print(f'Unexpected exception raised: {err}')
+            else:
+                raise
+        finally:
+            # always cleanly close the socket
+            self._client_sock.close()
+            print('Client socket has been closed')
 
-        self._client_sock.close()
-        self._create.close()
+            # always cleanly close the connection to the Create
+            self._create.close()
+            print('Serial connection has been closed')
 
     def read_loop(self):
         pb, payload = self._recv()
@@ -273,10 +286,6 @@ class Client(Protocol):
     def recv_close(self, payload):
         self._client_sock.send(bytes(PACKETS.ACKCLOSE))
         print('Close packet was received and the close process has begun')
-        self._client_sock.close()
-        print('Client socket has been closed')
-        self._create.close()
-        print('Serial connection has been closed')
         self._finished = True
 
     @property

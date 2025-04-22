@@ -57,12 +57,13 @@ class Simulation:
     def send_loop(self):
         try:
             while True:
-                # r, w, _ = select.select([self._sock], [self._client_sock], [])
+                # r, w, _ = select.select([self._client_sock], [self._client_sock], [])
                 # if r:
                 #     self.recv_close(None)
                 #
                 # if w:
                 #     self.send_data()
+                #     time.sleep(0.1)  # throttle sending data, allowing time for client to determine if it has reached the last goal and signal the end
                 self.send_data()  # SIMPLIFIED FOR SIMULATION
         except BreakLoop:
             pass

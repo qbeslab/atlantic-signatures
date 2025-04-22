@@ -73,9 +73,12 @@ def ipackets(pb, b=None):
 class Protocol:
 
     def send_close(self):
+        print('Ending connection')
         self._send(bytes(PACKETS.CLOSE))
+        raise BreakLoop()
 
     def recv_close(self, payload):
+        print('Close packet was received and the close process has begun')
         self._client_sock.send(bytes(PACKETS.ACKCLOSE))
         raise BreakLoop()
 

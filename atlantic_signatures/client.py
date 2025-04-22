@@ -26,7 +26,6 @@ class Client(Protocol):
         self._starting_mode = kwargs.get('starting_mode', 'full')
         self._default_v = 100
         self._started = False
-        self._finished = False
         self._config = {}
 
         raise_err = False
@@ -97,9 +96,6 @@ class Client(Protocol):
         else:
             raise OSError("An invalid packet was received: {}".format(pb))
 
-        if self._finished:
-            raise BreakLoop()
-
     def recv_command(self, payload):
         command = json.loads(payload, encoding='utf-8')
         if command['opcode'] == OPCODES.DRIVE:
@@ -117,6 +113,7 @@ class Client(Protocol):
             for option, value in params.items():
                 print('{} - {} = {}'.format(section, option, value))
                 #setattr(self, '_%s' % option, value)
+        print()
 
         self._client_sock.send(bytes(PACKETS.ACKCONFIG))
 
@@ -148,7 +145,6 @@ class Client(Protocol):
             self._current_goal_number += 1
         else:
             print('We have reached all goals...')
-            print('Ending connection with host')
             self.send_close()
 
     def recv_data(self, payload, *, rotating=False):
@@ -284,11 +280,6 @@ class Client(Protocol):
             self._create._serial_startup(mode=self._starting_mode)
             self._started = True
         self._client_sock.send(bytes(PACKETS.ACKSTART))
-
-    def recv_close(self, payload):
-        self._client_sock.send(bytes(PACKETS.ACKCLOSE))
-        print('Close packet was received and the close process has begun')
-        self._finished = True
 
     @property
     def pose(self):

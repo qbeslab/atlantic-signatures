@@ -117,6 +117,7 @@ class Create:
         time.sleep(2)
 
     def close(self):
+        self._stop()  # needed to exit full mode and allow charging after use
         self._serial.close()
 
     @staticmethod

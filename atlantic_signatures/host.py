@@ -168,7 +168,7 @@ class Host(Protocol):
                 'The Create has been occluded for the past 10 frames and is '
                 'assumed to be lost'
                 )
-            raise BreakLoop()
+            self.send_close()
 
         self._vicon_client.GetFrame()
         p_dat, p_oc = self._vicon_client.GetSegmentGlobalTranslation(*self.tracking_object)

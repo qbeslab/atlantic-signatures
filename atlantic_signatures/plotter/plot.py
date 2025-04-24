@@ -137,8 +137,8 @@ class AnimatedPlot:
         #X, Y, THETA, TIME =
         a = load_data_file(csv_file)
         X, Y, THETA, TIME = a
-        X *= 0.001
-        Y *= 0.001
+        X *= 0.001  # convert mm to m
+        Y *= 0.001  # convert mm to m
         self.X, self.Y, self.THETA, self.T = X, Y, THETA, TIME
         self.data = (X, Y, TIME)
         self.t0 = TIME[0]
@@ -208,14 +208,13 @@ class AnimatedPlot:
         self.add_current()
         self.add_beta_gamma()
 
-
-
         self.start_animation()
 
-        #self.ax.plot(X, Y, color='black')
-        # plt.show()
-
     def add_current(self):
+        """
+        Plot the ocean current as a quiver plot
+        """
+
         X, Y = np.meshgrid(np.linspace(*self.ax.get_xlim(), 20), np.linspace(*self.ax.get_ylim(), 20))
 
         current = Current.from_cache(self.cache)
@@ -224,6 +223,10 @@ class AnimatedPlot:
         self.ax.quiver(X, Y, V_X, V_Y, color='grey')
 
     def add_beta_gamma(self):
+        """
+        Plot the magnetic field as a contour plot
+        """
+
         X, Y = np.meshgrid(np.linspace(*self.ax.get_xlim(), 5), np.linspace(*self.ax.get_ylim(), 5))
 
         field = Field.from_cache(self.cache)
@@ -232,34 +235,16 @@ class AnimatedPlot:
         Cb = self.ax.contour(X, Y, beta, **beta_kwargs)
         Cg = self.ax.contour(X, Y, gamma, **gamma_kwargs)
 
-    def gen_func(self):
-        multi = int(self.t_multi)
-        for i, t in enumerate(itertools.islice(self.T, 0, len(self.T), multi)):
-            yield i*multi, t
-
     def start_animation(self):
+        # create an empty line plot for the trajectory (data to be updated later)
         self.line, = self.ax.plot([], [], color='black', linewidth=2, solid_capstyle='round')
+
+        # create an arrow for the heading (position to be updated)
         self.heading = self.ax.annotate('', xytext=(0, 0), xy=(0.5, 0.5), arrowprops=dict(shrink=0.3, color='red', width=1, headwidth=4, headlength=4))
-        #self.anim = FuncAnimation(self.fig, self.update_animation, self.gen_func, interval=self.t0)
-        self.anim = FuncAnimation(self.fig, self.update_animation_mk2,
-                                  frames=np.arange(0, len(self.T), 10))
 
-    def update_animation(self, data):
-        i, t = data
+        self.anim = FuncAnimation(self.fig, self.update_animation, frames=np.arange(0, len(self.T), 10))
 
-        delay = int(1000*(t-self.t0)/self.t_multi)
-        if delay < 0:
-            delay = 0
-        self.anim.event_source.interval = delay
-        self.t0 = t
-
-        self.line.set_data(self.X[:i], self.Y[:i])
-        self.heading.set_x(self.X[i])
-        self.heading.set_y(self.Y[i])
-        self.heading.xy = (self.X[i] + 0.3 * np.cos(self.THETA[i]), self.Y[i] + 0.3 * np.sin(self.THETA[i]))
-        return self.line, self.heading
-
-    def update_animation_mk2(self, i):
+    def update_animation(self, i):
         t = self.T[i]
 
         delay = int(1000*(t-self.t0)/self.t_multi)
@@ -273,7 +258,6 @@ class AnimatedPlot:
         self.heading.set_y(self.Y[i])
         self.heading.xy = (self.X[i] + 0.3 * np.cos(self.THETA[i]), self.Y[i] + 0.3 * np.sin(self.THETA[i]))
         return self.line, self.heading
-
 
     def native_units_to_pts(self):
         """

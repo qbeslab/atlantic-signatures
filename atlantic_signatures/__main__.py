@@ -9,6 +9,7 @@ import sys
 from pathlib import Path
 import tempfile
 import re
+import glob
 
 from atlantic_signatures.client import Client
 from atlantic_signatures.host import Host
@@ -34,7 +35,11 @@ def sim_run(args):
 
 
 def plot_run(args):
+    files = []
     for file in args.file:
+        files += glob.glob(file)
+
+    for file in files:
         file = Path(file)
         print(f'Reading "{file}"')
 
@@ -139,7 +144,7 @@ def get_parser():
     sim_parser.set_defaults(func=sim_run)
 
     plot_parser = command_subparser.add_parser('plot', description='Generate plots of an experiment', help='Generate plots of an experiment')
-    plot_parser.add_argument('file', nargs='+', help='The input file to plot, created by an experiment (multiple files allowed)')
+    plot_parser.add_argument('file', nargs='+', help='The input file to plot, created by an experiment (multiple files and/or wildcards allowed)')
     plot_parser.add_argument(
         '--type', '-t',
         dest='plot_type',

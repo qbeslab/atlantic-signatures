@@ -298,13 +298,14 @@ class AnimatedPlot(Plot):
 if __name__ == '__main__':
 
     import argparse
+    import glob
     import re
     from pathlib import Path
     import tempfile
     import os.path
 
     parser = argparse.ArgumentParser(description='Generate plots of an experiment')
-    parser.add_argument('file', nargs='+', help='The input file to plot, created by an experiment (multiple files allowed)')
+    parser.add_argument('file', nargs='+', help='The input file to plot, created by an experiment (multiple files and/or wildcards allowed)')
     parser.add_argument(
         '--type', '-t',
         dest='plot_type',
@@ -314,7 +315,11 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
+    files = []
     for file in args.file:
+        files += glob.glob(file)
+
+    for file in files:
         file = Path(file)
         print(f'Reading "{file}"')
 

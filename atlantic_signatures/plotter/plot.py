@@ -242,7 +242,7 @@ class AnimatedPlot:
         # create an arrow for the heading (position to be updated)
         self.heading = self.ax.annotate('', xytext=(0, 0), xy=(0.5, 0.5), arrowprops=dict(shrink=0.3, color='red', width=1, headwidth=4, headlength=4))
 
-        self.anim = FuncAnimation(self.fig, self.update_animation, frames=np.arange(0, len(self.T), 10))
+        self.anim = FuncAnimation(self.fig, self.update_animation, frames=np.unique(np.append(np.arange(0, len(self.T), 10), len(self.T)-1)))
 
     def update_animation(self, i):
         t = self.T[i]
@@ -253,7 +253,7 @@ class AnimatedPlot:
         self.anim.event_source.interval = delay
         self.t0 = t
 
-        self.line.set_data(self.X[:i], self.Y[:i])
+        self.line.set_data(self.X[:i+1], self.Y[:i+1])
         self.heading.set_x(self.X[i])
         self.heading.set_y(self.Y[i])
         self.heading.xy = (self.X[i] + 0.3 * np.cos(self.THETA[i]), self.Y[i] + 0.3 * np.sin(self.THETA[i]))

@@ -33,8 +33,7 @@ def sim_run(args):
     sim = Simulation(x0=args.x0, y0=args.y0, theta0=theta0_radians, config_file=args.config_file)
 
 
-def plot_animated(args):
-    from atlantic_signatures.plotter.plot import AnimatedPlot
+def plot_run(args):
     for file in args.file:
         file = Path(file)
         print(f'Reading "{file}"')
@@ -56,16 +55,25 @@ def plot_animated(args):
                 else:
                     csv_file.write(line)
 
-            # close the temp files so that they can be read by AnimatedPlot
+            # close the temp files so that they can be read by the plotters
             config_file.close()
             csv_file.close()
 
-            print(f'Animating "{file}"')
-            x = AnimatedPlot(config_file.name, csv_file.name, t_multi=10)
+            if args.plot_type in ['all', 'static']:
+                print(f'Plotting "{file}"')
+                from atlantic_signatures.plotter.plot import Plot
+                fig = Plot(config_file.name, csv_file.name)
+                out_file = str(file.parent / (file.stem + '.png'))
+                fig.save(out_file)
+                print(f'Saved "{out_file}"')
 
-            out_file = str(file.parent / (file.stem + '.gif'))
-            x.save(out_file, fps=10)
-            print(f'Saved "{out_file}"')
+            if args.plot_type in ['all', 'animated']:
+                print(f'Animating "{file}"')
+                from atlantic_signatures.plotter.plot import AnimatedPlot
+                anim = AnimatedPlot(config_file.name, csv_file.name, t_multi=10)
+                out_file = str(file.parent / (file.stem + '.gif'))
+                anim.save(out_file, fps=10)
+                print(f'Saved "{out_file}"')
 
         print()
 
@@ -130,9 +138,16 @@ def get_parser():
     )
     sim_parser.set_defaults(func=sim_run)
 
-    plot_parser = command_subparser.add_parser('plot', description='Generate an animated plot of an experiment', help='Generate an animated plot of an experiment')
+    plot_parser = command_subparser.add_parser('plot', description='Generate plots of an experiment', help='Generate plots of an experiment')
     plot_parser.add_argument('file', nargs='+', help='The input file to plot, created by an experiment (multiple files allowed)')
-    plot_parser.set_defaults(func=plot_animated)
+    plot_parser.add_argument(
+        '--type', '-t',
+        dest='plot_type',
+        default='all',
+        choices=['all', 'static', 'animated'],
+        help='The type of plot to generate (default: all)',
+    )
+    plot_parser.set_defaults(func=plot_run)
 
     return main_parser
 

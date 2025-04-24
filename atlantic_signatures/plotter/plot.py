@@ -130,11 +130,9 @@ r_goal_kwargs['linewidth'] = 1
 
 
 
-class AnimatedPlot:
+class Plot:
     def __init__(self, config_file, csv_file, **kwargs):
-        self.t_multi = kwargs.pop('t_multi', 1)
         config = ConfigLoader(config_file, **kwargs)
-        #X, Y, THETA, TIME =
         a = load_data_file(csv_file)
         X, Y, THETA, TIME = a
         X *= 0.001  # convert mm to m
@@ -208,7 +206,18 @@ class AnimatedPlot:
         self.add_current()
         self.add_beta_gamma()
 
-        self.start_animation()
+        self.plot_data()
+
+    def native_units_to_pts(self):
+        """
+        Return the number of points (fontsize) that scales the axis dimensions
+        of the trajectory plot to the physical size of the plot.
+        """
+        xmin, xmax = self.ax.get_xlim()
+
+        # scale is the number of pixels per base plot unit (typically meters)
+        scale = self.ax.get_window_extent().width / (xmax - xmin)
+        return scale // 2
 
     def add_current(self):
         """
@@ -235,7 +244,21 @@ class AnimatedPlot:
         Cb = self.ax.contour(X, Y, beta, **beta_kwargs)
         Cg = self.ax.contour(X, Y, gamma, **gamma_kwargs)
 
-    def start_animation(self):
+    def plot_data(self):
+        # create a line plot for the trajectory
+        self.line, = self.ax.plot(self.X, self.Y, color='black', linewidth=2, solid_capstyle='round')
+
+    def save(self, fname, *args, **kwargs):
+        self.fig.savefig(fname, *args, **kwargs)
+
+
+
+class AnimatedPlot(Plot):
+    def __init__(self, config_file, csv_file, **kwargs):
+        self.t_multi = kwargs.pop('t_multi', 1)
+        super().__init__(config_file, csv_file, **kwargs)
+
+    def plot_data(self):
         # create an empty line plot for the trajectory (data to be updated later)
         self.line, = self.ax.plot([], [], color='black', linewidth=2, solid_capstyle='round')
 
@@ -259,17 +282,6 @@ class AnimatedPlot:
         self.heading.xy = (self.X[i] + 0.3 * np.cos(self.THETA[i]), self.Y[i] + 0.3 * np.sin(self.THETA[i]))
         return self.line, self.heading
 
-    def native_units_to_pts(self):
-        """
-        Return the number of points (fontsize) that scales the axis dimensions
-        of the trajectory plot to the physical size of the plot.
-        """
-        xmin, xmax = self.ax.get_xlim()
-
-        # scale is the number of pixels per base plot unit (typically meters)
-        scale = self.ax.get_window_extent().width / (xmax - xmin)
-        return scale // 2
-
     def save(self, fname, *args, **kwargs):
         self.anim.save(fname, *args, **kwargs)
 
@@ -291,8 +303,15 @@ if __name__ == '__main__':
     import tempfile
     import os.path
 
-    parser = argparse.ArgumentParser(description='Generate an animated plot of an experiment')
+    parser = argparse.ArgumentParser(description='Generate plots of an experiment')
     parser.add_argument('file', nargs='+', help='The input file to plot, created by an experiment (multiple files allowed)')
+    parser.add_argument(
+        '--type', '-t',
+        dest='plot_type',
+        default='all',
+        choices=['all', 'static', 'animated'],
+        help='The type of plot to generate (default: all)',
+    )
     args = parser.parse_args()
 
     for file in args.file:
@@ -320,11 +339,18 @@ if __name__ == '__main__':
             config_file.close()
             csv_file.close()
 
-            print(f'Animating "{file}"')
-            x = AnimatedPlot(config_file.name, csv_file.name, t_multi=10)
+            if args.plot_type in ['all', 'static']:
+                print(f'Plotting "{file}"')
+                fig = Plot(config_file.name, csv_file.name)
+                out_file = str(file.parent / (file.stem + '.png'))
+                fig.save(out_file)
+                print(f'Saved "{out_file}"')
 
-            out_file = str(file.parent / (file.stem + '.gif'))
-            x.save(out_file, fps=10)
-            print(f'Saved "{out_file}"')
+            if args.plot_type in ['all', 'animated']:
+                print(f'Animating "{file}"')
+                anim = AnimatedPlot(config_file.name, csv_file.name, t_multi=10)
+                out_file = str(file.parent / (file.stem + '.gif'))
+                anim.save(out_file, fps=10)
+                print(f'Saved "{out_file}"')
 
         print()

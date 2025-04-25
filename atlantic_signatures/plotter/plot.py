@@ -227,7 +227,7 @@ class Plot:
         X, Y = np.meshgrid(np.linspace(*self.ax.get_xlim(), 20), np.linspace(*self.ax.get_ylim(), 20))
 
         current = Current.from_cache(self.cache)
-        V_X, V_Y = current.mesh_calculate(X, Y)
+        V_X, V_Y = current.calculate(X, Y)
 
         self.ax.quiver(X, Y, V_X, V_Y, color='grey')
 
@@ -239,7 +239,7 @@ class Plot:
         X, Y = np.meshgrid(np.linspace(*self.ax.get_xlim(), 5), np.linspace(*self.ax.get_ylim(), 5))
 
         field = Field.from_cache(self.cache)
-        beta, gamma = field.mesh_calculate(X, Y)
+        beta, gamma = field.calculate(X, Y)
 
         Cb = self.ax.contour(X, Y, beta, **beta_kwargs)
         Cg = self.ax.contour(X, Y, gamma, **gamma_kwargs)

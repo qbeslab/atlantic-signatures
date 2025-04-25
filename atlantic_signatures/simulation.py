@@ -173,7 +173,7 @@ class Simulation:
         if self._goals:
             x, y = self._goals.popleft()
             self._x_goal, self._y_goal = x, y
-            self._beta_goal, self._gamma_goal = self._field_calculator.mesh_calculate(x, y)
+            self._beta_goal, self._gamma_goal = self._field_calculator.calculate(x, y)
             self._current_goal_number += 1
         else:
             print('We have reached all goals...')
@@ -206,7 +206,7 @@ class Simulation:
         d_goal = sqrt(x_diff**2 + y_diff**2)
 
         # Current is in units mm/s
-        x_current, y_current = self._current_calculator.point_calculate(x, y)
+        x_current, y_current = self._current_calculator.calculate(x, y)
 
         if d_goal <= self._r_goal:
             print()
@@ -264,7 +264,7 @@ class Simulation:
                     raise ValueError(f"unrecognized multimodal pathing method: '{self._multimodal_method}', valid options: {possible_methods}")
 
         else:
-            beta, gamma = self._field_calculator.mesh_calculate(x, y)
+            beta, gamma = self._field_calculator.calculate(x, y)
             beta_diff, gamma_diff = self._beta_goal - beta, self._gamma_goal - gamma
             magnitude = sqrt(beta_diff**2 + gamma_diff**2)
 

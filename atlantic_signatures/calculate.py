@@ -1,7 +1,6 @@
 """
 
 """
-import math
 from operator import itemgetter
 
 import numpy as np
@@ -19,39 +18,30 @@ class Current:
         self._theta_fluid = theta_fluid
         self._v_radial = v_radial
 
-    def point_calculate(self, x, y):
-        """
-        Given the parameters for current in the North Atlantic Signatures
-        paper, return a 2-tuple: (v_x, v_y).
-        """
-        r = math.sqrt(x**2 + y**2) + 1e-4
+        self.calculate = np.vectorize(self._point_calculate, excluded=['self'])
+
+    def _point_calculate(self, x, y):
+        r = np.hypot(x, y) + 1e-4
 
         a = (self._s_x/r)*(self._v_radial*x - self._v_theta*y)
         b = (self._s_y/r)*(self._v_radial*y + self._v_theta*x)
 
-        v_x = a*math.cos(self._theta_fluid) - b*math.sin(self._theta_fluid)
-        v_y = a*math.sin(self._theta_fluid) + b*math.cos(self._theta_fluid)
+        v_x = a*np.cos(self._theta_fluid) - b*np.sin(self._theta_fluid)
+        v_y = a*np.sin(self._theta_fluid) + b*np.cos(self._theta_fluid)
+
+        v_x = self.remove_units(v_x)
+        v_y = self.remove_units(v_y)
 
         return v_x, v_y
-
-    def mesh_calculate(self, X, Y):
-        R = np.hypot(X, Y) + 1e-4
-
-        a = (self._s_x/R)*(self._v_radial*X - self._v_theta*Y)
-        b = (self._s_y/R)*(self._v_radial*Y + self._v_theta*X)
-
-        V_X = a*np.cos(self._theta_fluid) - b*math.sin(self._theta_fluid)
-        V_Y = a*np.sin(self._theta_fluid) + b*math.cos(self._theta_fluid)
-
-        return V_X, V_Y
-
 
     @classmethod
     def from_cache(cls, cache):
         values = itemgetter(*cls.PARAMS)(cache[cls.SECTION])
         return cls(**{i: j for i, j in zip(cls.PARAMS, values)})
 
-
+    @staticmethod
+    def remove_units(quantity):
+        return quantity.magnitude if hasattr(quantity, 'magnitude') else quantity
 
 
 
@@ -70,7 +60,6 @@ class Field:
         self._b_int = b_int
         self._c_int = c_int
         self._eta   = eta
-
 
         _theta_inc = kwargs.get('theta_inc')
         _theta_int = kwargs.get('theta_int')
@@ -109,23 +98,22 @@ class Field:
         self._beta_0 = kwargs.get('beta_0', self.OPT_PARAMS['beta_0'])
         self._gamma_0 = kwargs.get('gamma_0', self.OPT_PARAMS['gamma_0'])
 
+        self.calculate = np.vectorize(self._point_calculate, excluded=['self'])
 
-    def point_calculate(self, x, y):
-        pass
-
-    def mesh_calculate(self, X, Y):
+    def _point_calculate(self, x, y):
         d_beta  = sum(i*j for i, j in zip(self._beta_0, (self._a_inc, self._b_inc, self._c_inc)))
         d_gamma = sum(i*j for i, j in zip(self._gamma_0, (self._a_int, self._b_int, self._c_int)))
 
         def _func(a, b, c, d, e, t):
-            return (e/c)*(d - a*(X*math.cos(t) + Y*math.sin(t)) - b*(Y*math.cos(t) - X*math.sin(t)))
+            return (e/c)*(d - a*(x*np.cos(t) + y*np.sin(t)) - b*(y*np.cos(t) - x*np.sin(t)))
 
-        Beta = _func(self._a_inc, self._b_inc, self._c_inc, d_beta, self._eta, self._theta_inc)
-        Gamma = _func(self._a_int, self._b_int, self._c_int, d_gamma, 1, self._theta_int)  # gamma's eta is always 1 -- negated sensing affects beta only
+        beta = _func(self._a_inc, self._b_inc, self._c_inc, d_beta, self._eta, self._theta_inc)
+        gamma = _func(self._a_int, self._b_int, self._c_int, d_gamma, 1, self._theta_int)  # gamma's eta is always 1 -- negated sensing affects beta only
 
-        return Beta, Gamma
+        beta = self.remove_units(beta)
+        gamma = self.remove_units(gamma)
 
-
+        return beta, gamma
 
     @classmethod
     def from_cache(cls, cache):
@@ -135,3 +123,7 @@ class Field:
         kwargs.update({i: j for i, j in zip(cls.REQ_PARAMS, values)})
 
         return cls(**kwargs)
+
+    @staticmethod
+    def remove_units(quantity):
+        return quantity.magnitude if hasattr(quantity, 'magnitude') else quantity

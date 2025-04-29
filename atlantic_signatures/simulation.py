@@ -1,16 +1,15 @@
 """
 
 """
-from collections import deque
 import json
-from math import acos, atan2, copysign, cos, pi, sin, sqrt
+from math import acos, atan2, copysign, cos, sin, sqrt
 import os
 import time
 import numpy as np
 
-from atlantic_signatures.calculate import Current, Field
 from atlantic_signatures.config_loader import config_to_dict, Loader
-from atlantic_signatures.socket_protocol import *
+from atlantic_signatures.navigator import Navigator, FinalGoalReached
+from atlantic_signatures.socket_protocol import BreakLoop
 
 SIMS_DIR = os.path.join(os.getcwd(), 'simulations')
 
@@ -149,37 +148,11 @@ class Simulation:
 
         # self._client_sock.send(bytes(PACKETS.ACKCONFIG))  # REMOVED FOR SIMULATION
 
-        self._field_calculator = Field.from_cache(self._config)
-        self._current_calculator = Current.from_cache(self._config)
-
         # Save some important parameters as attributes
-        self._goals = deque(self._config['Goal Properties'].values())
-        self._goal_count = len(self._goals)
-        self._velocity = self._config['Create Properties']['linear_velocity']
         self._time_step = self._config['Create Properties']['agent_time_step']
         self._angle_cutoff = self._config['Create Properties']['angle_cutoff']
-        self._r_goal = self._config['Create Properties']['r_goal']
-        self._r_multi = self._config['Create Properties']['r_multi']
-        self._multimodal_method = self._config['Create Properties']['multimodal_method']
 
-        self._current_goal_number = 0
-        self._update_goal()
-
-    def _update_goal(self):
-        """
-        Cache the coordinates of the current goal in Cartesian and
-        'Beta-Gamma' space.
-        """
-        if self._goals:
-            x, y = self._goals.popleft()
-            self._x_goal, self._y_goal = x, y
-            self._beta_goal, self._gamma_goal = self._field_calculator.calculate(x, y)
-            self._current_goal_number += 1
-        else:
-            print('We have reached all goals...')
-            print('Ending connection with host')
-            # self.send_close()  # REMOVED FOR SIMULATION
-            raise BreakLoop
+        self._navigator = Navigator.from_cache(self._config)
 
     def recv_data(self, payload, *, rotating=False):
         """
@@ -202,75 +175,14 @@ class Simulation:
             self.move_to_next_point(**self._pose)
 
     def move_to_next_point(self, x, y, theta):
-        x_diff, y_diff = self._x_goal - x, self._y_goal - y
-        d_goal = sqrt(x_diff**2 + y_diff**2)
-
-        # Current is in units mm/s
-        x_current, y_current = self._current_calculator.calculate(x, y)
-
-        if d_goal <= self._r_goal:
-            print()
-            print(f'Reached goal {self._current_goal_number} of {self._goal_count}')
-            print()
-            time.sleep(0.3)  # ADDED FOR SIMULATION
-            self._update_goal()
-
-        elif d_goal <= self._r_multi:
-            possible_methods = ['direct', 'optimized_grid_search']
-
-            match self._multimodal_method:
-                case 'direct':
-                    # DIRECT PATHING METHOD
-                    magnitude = d_goal
-                    dx, dy = x_diff / magnitude, y_diff / magnitude
-                    self.move_create(self._velocity * dx + x_current, self._velocity * dy + y_current)
-
-                case 'optimized_grid_search':
-                    # OPTIMIZED PATHING METHOD VIA GRID SEARCH
-                    c = np.array([x_current, y_current])  # ocean current vector
-                    d = np.array([x_diff, y_diff])  # vector from agent to goal
-
-                    def objective(u, c, d):
-                        # given a hypothetical unit vector u, compute the agent's net
-                        # velocity if it tried to travel in that direction
-                        v_net = self._velocity * u + c
-
-                        # return cos(theta) of the angle between the net velocity and the
-                        # vector to the goal, for maximization (thereby minimizing theta)
-                        return np.dot(v_net, d) / (np.linalg.norm(v_net) * np.linalg.norm(d))
-
-                    def optimal_heading(c, d, num_points):
-                        best_objective = -np.inf
-                        optimal_u = None
-
-                        # generate a grid of points on the unit circle
-                        theta = np.linspace(-np.pi, np.pi, num_points)
-                        unit_circle_points = np.vstack((np.cos(theta), np.sin(theta))).T
-
-                        # evaluate the objective function at each point
-                        for u in unit_circle_points:
-                            this_objective = objective(u, c, d)
-                            if this_objective > best_objective:
-                                best_objective = this_objective
-                                optimal_u = u
-
-                        return optimal_u
-
-                    num_points = 360  # affects angular resolution
-                    dx, dy = optimal_heading(c, d, num_points)
-                    self.move_create(self._velocity * dx + x_current, self._velocity * dy + y_current)
-
-                case _:
-                    raise ValueError(f"unrecognized multimodal pathing method: '{self._multimodal_method}', valid options: {possible_methods}")
-
-        else:
-            beta, gamma = self._field_calculator.calculate(x, y)
-            beta_diff, gamma_diff = self._beta_goal - beta, self._gamma_goal - gamma
-            magnitude = sqrt(beta_diff**2 + gamma_diff**2)
-
-            dx, dy = beta_diff / magnitude, gamma_diff / magnitude
-
-            self.move_create(self._velocity * dx + x_current, self._velocity * dy + y_current)
+        try:
+            # self._navigator.check_reached_goal(x, y)
+            if self._navigator.check_reached_goal(x, y): time.sleep(0.3)  # ADDED FOR SIMULATION
+        except FinalGoalReached:
+            # self.send_close()  # REMOVED FOR SIMULATION
+            raise BreakLoop
+        dx, dy = self._navigator.net_velocity(x, y)
+        self.move_create(dx, dy)
 
     def move_create(self, vx, vy):
         """
@@ -314,7 +226,7 @@ class Simulation:
 
     def simulate_turn(self, angle):
         self._new_pose = self._pose
-        self._new_pose['theta'] = (self._new_pose['theta'] + angle + pi) % (2*pi) - pi
+        self._new_pose['theta'] = (self._new_pose['theta'] + angle + np.pi) % (2*np.pi) - np.pi
 
     def simulate_straight(self, distance):
         self._new_pose = self._pose

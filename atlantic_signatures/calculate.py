@@ -6,6 +6,13 @@ from operator import itemgetter
 import numpy as np
 
 
+def normalize(v):
+    norm = np.linalg.norm(v)
+    if norm == 0:
+        return v
+    return v / norm
+
+
 class Current:
 
     SECTION = 'Current Properties'
@@ -37,7 +44,7 @@ class Current:
     @classmethod
     def from_cache(cls, cache):
         values = itemgetter(*cls.PARAMS)(cache[cls.SECTION])
-        return cls(**{i: j for i, j in zip(cls.PARAMS, values)})
+        return cls(**dict(zip(cls.PARAMS, values)))
 
     @staticmethod
     def remove_units(quantity):

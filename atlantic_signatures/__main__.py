@@ -20,10 +20,12 @@ RUNNING_AS_HOST = os.environ.get('RUNNING_AS_HOST', sys.platform == 'win32')
 
 
 def host_run(args):
+    print()
     return Host(config_file=args.config_file, objectname=args.objectname, host=args.host, timeout=args.timeout)
 
 
 def client_run(args):
+    print()
     return Client(host=args.host)
 
 

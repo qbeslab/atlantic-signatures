@@ -54,6 +54,8 @@ class Host(Protocol):
                 test_num += 1
 
         self._data_file = open(os.path.join(DATA_DIR, 'Test-%d.csv' % test_num), 'w')
+        print(f'Writing data to file: {self._data_file.name}')
+        print()
         self.start()
 
 
@@ -79,6 +81,8 @@ class Host(Protocol):
 
     def send_loop(self):
         try:
+            print('Sending data to client periodically')
+            print()
             while True:
                 r, w, _ = select.select([self._client_sock], [self._client_sock], [])
                 if r:
@@ -128,7 +132,8 @@ class Host(Protocol):
 
             try:
                 self._client_sock, addr = self._sock.accept()
-                print('Connected to client at: {}'.format(addr))
+                print(f'Connected to client at: {addr}')
+                print()
                 break
             except TimeoutError as err:
                 if raise_err:
@@ -146,6 +151,7 @@ class Host(Protocol):
                 'Successfully connected to the Vicon system. Running Data '
                 'Stream SDK version-%s' % '.'.join(str(i) for i in self._vicon_client.GetVersion())
                 )
+            print()
 
             self._vicon_client.SetBufferSize(1)
             self._vicon_client.EnableSegmentData()

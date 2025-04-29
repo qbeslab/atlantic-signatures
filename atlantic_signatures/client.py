@@ -45,6 +45,7 @@ class Client(Protocol):
                 self._client_sock.settimeout(kwargs.get('timeout', 10))
                 self._client_sock.connect((self._host, port))
                 print(f'Connected to host at: {host}:{port}')
+                print()
                 break
             except TimeoutError:
                 if raise_err:

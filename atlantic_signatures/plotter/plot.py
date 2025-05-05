@@ -258,7 +258,7 @@ class AnimatedPlot(Plot):
         # create an arrow for the robot's heading (position to be updated)
         self.heading = self.ax.annotate('', xytext=(0, 0), xy=(self.robot_radius, self.robot_radius), arrowprops=dict(color='red', width=1, headwidth=4, headlength=4))
 
-        self.anim = FuncAnimation(self.fig, self.update_animation, frames=np.unique(np.append(np.arange(0, len(self.T), 10), len(self.T)-1)))
+        self.anim = FuncAnimation(self.fig, self.update_animation, frames=np.unique(np.append(np.arange(0, len(self.T), 5), len(self.T)-1)))
 
     def update_animation(self, i):
         t = self.T[i]

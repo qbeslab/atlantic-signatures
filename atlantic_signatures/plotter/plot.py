@@ -7,18 +7,14 @@ generate a plot or plots with the formatting of the paper:
 
 """
 
-import itertools
-from operator import attrgetter, itemgetter
-
 from matplotlib.animation import FuncAnimation
 from matplotlib.patches   import Circle
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-from atlantic_signatures.plotter.config_loader import ConfigLoader, load_data_file, get_data_file, ureg
-from atlantic_signatures.plotter import defaults, colors
+from atlantic_signatures.plotter import colors
 from atlantic_signatures.calculate import Current, Field
+from atlantic_signatures.config_loader import Loader, config_to_dict
 
 #plt.rcParams['animation.ffmpeg_path'] = os.path.join(os.expan)
 
@@ -132,46 +128,17 @@ r_goal_kwargs['linewidth'] = 1
 
 class Plot:
     def __init__(self, config_file, csv_file, **kwargs):
-        config = ConfigLoader(config_file, **kwargs)
-        a = load_data_file(csv_file)
+        self.cache = config_to_dict(Loader().read_config_file(config_file))
+        a = np.loadtxt(csv_file, skiprows=1, delimiter=',', unpack=True)
         X, Y, THETA, TIME = a
-        X *= 0.001  # convert mm to m
-        Y *= 0.001  # convert mm to m
         self.X, self.Y, self.THETA, self.T = X, Y, THETA, TIME
         self.data = (X, Y, TIME)
         self.t0 = TIME[0]
 
-
-        id_map = {
-            '<int>': config.getint,
-            '<float>': config.getfloat,
-            '<bool>': config.getboolean,
-            '<quantity>': config.getquantity,
-            '<string>': config.get
-            }
-
-        self.cache = {}
-        for section in defaults.REQUIRED_CONFIG_SECTIONS:
-            self.cache[section] = {}
-            for option in config.options(section):
-                id, default, unit = defaults.CONFIG_OPTIONS.get((section, option), ('<string>', None, None))
-                kwargs = {}
-
-                if default is not None:
-                    kwargs['fallback'] = default
-
-                if id == '<quantity>' and unit is not None:
-                    kwargs['default_units'] = unit
-
-                if section == 'Goal Properties':
-                    id = '<quantity>'
-
-                self.cache[section][option] = id_map[id](section, option, **kwargs)
-
-        xboundary_kwargs['xmin'] = self.cache['Boundary Conditions']['x_min'].m
-        xboundary_kwargs['xmax'] = self.cache['Boundary Conditions']['x_max'].m
-        yboundary_kwargs['ymin'] = self.cache['Boundary Conditions']['y_min'].m
-        yboundary_kwargs['ymax'] = self.cache['Boundary Conditions']['y_max'].m
+        xboundary_kwargs['xmin'] = self.cache['Boundary Conditions']['x_min'] / 1000  # convert mm to m
+        xboundary_kwargs['xmax'] = self.cache['Boundary Conditions']['x_max'] / 1000  # convert mm to m
+        yboundary_kwargs['ymin'] = self.cache['Boundary Conditions']['y_min'] / 1000  # convert mm to m
+        yboundary_kwargs['ymax'] = self.cache['Boundary Conditions']['y_max'] / 1000  # convert mm to m
 
         self.fig = plt.figure(figsize=(5.5, 5.5))
         self.ax = self.fig.add_subplot(1, 1, 1)
@@ -188,8 +155,8 @@ class Plot:
         #print(self.ax.get_window_extent().x1 - self.ax.get_window_extent().x0)
 
         # goal_marker_kwargs['markersize'] = self.native_units_to_pts() * self.cache['Create Properties']['r_goal'].m
-        r_goal_kwargs['radius'] = self.cache['Create Properties']['r_goal'].m
-        r_multi_kwargs['radius'] = self.cache['Create Properties']['r_multi'].m
+        r_goal_kwargs['radius'] = self.cache['Create Properties']['r_goal'] / 1000  # convert mm to m
+        r_multi_kwargs['radius'] = self.cache['Create Properties']['r_multi'] / 1000  # convert mm to m
 
         """
         for goalnum, goal in enumerate(self.cache['Goal Properties'].values()):
@@ -200,8 +167,9 @@ class Plot:
         _goals = self.cache['Goal Properties'].values()
         for goal, parulacolor in zip(_goals, colors.PARULA_COLORMAP.get_spaced_colors(len(_goals))):
             #self.ax.plot(*goal.m, color=parulacolor, **goal_marker_kwargs)
-            self.ax.add_artist(Circle(goal.m, facecolor=parulacolor, **r_goal_kwargs))
-            self.ax.add_artist(Circle(goal.m, **r_multi_kwargs))
+            goal = np.array(goal) / 1000  # convert mm to m
+            self.ax.add_artist(Circle(goal, facecolor=parulacolor, **r_goal_kwargs))
+            self.ax.add_artist(Circle(goal, **r_multi_kwargs))
 
         self.add_current()
         self.add_beta_gamma()
@@ -246,7 +214,9 @@ class Plot:
 
     def plot_data(self):
         # create a line plot for the trajectory
-        self.line, = self.ax.plot(self.X, self.Y, color='black', linewidth=2, solid_capstyle='round')
+        x = self.X / 1000  # convert mm to m
+        y = self.Y / 1000  # convert mm to m
+        self.line, = self.ax.plot(x, y, color='black', linewidth=2, solid_capstyle='round')
 
     def save(self, fname, *args, **kwargs):
         self.fig.savefig(fname, *args, **kwargs)
@@ -269,6 +239,8 @@ class AnimatedPlot(Plot):
 
     def update_animation(self, i):
         t = self.T[i]
+        x = self.X[i] / 1000  # convert mm to m
+        y = self.Y[i] / 1000  # convert mm to m
 
         delay = int(1000*(t-self.t0)/self.t_multi)
         if delay < 0:
@@ -276,10 +248,10 @@ class AnimatedPlot(Plot):
         self.anim.event_source.interval = delay
         self.t0 = t
 
-        self.line.set_data(self.X[:i+1], self.Y[:i+1])
-        self.heading.set_x(self.X[i])
-        self.heading.set_y(self.Y[i])
-        self.heading.xy = (self.X[i] + 0.3 * np.cos(self.THETA[i]), self.Y[i] + 0.3 * np.sin(self.THETA[i]))
+        self.line.set_data(self.X[:i+1] / 1000, self.Y[:i+1] / 1000)  # convert mm to m
+        self.heading.set_x(x)
+        self.heading.set_y(y)
+        self.heading.xy = (x + 0.3 * np.cos(self.THETA[i]), y + 0.3 * np.sin(self.THETA[i]))
         return self.line, self.heading
 
     def save(self, fname, *args, **kwargs):

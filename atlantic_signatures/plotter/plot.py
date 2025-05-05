@@ -6,6 +6,8 @@ generate a plot or plots with the formatting of the paper:
  without GPS in a linearized northern Atlantic ocean: a simulation study
 
 """
+import os
+import sys
 
 from matplotlib.animation import FuncAnimation
 from matplotlib.patches   import Circle
@@ -15,6 +17,7 @@ import numpy as np
 from atlantic_signatures.plotter import colors
 from atlantic_signatures.calculate import Current, Field
 from atlantic_signatures.config_loader import Loader, config_to_dict
+from atlantic_signatures.navigator import Navigator, FinalGoalReached
 
 #plt.rcParams['animation.ffmpeg_path'] = os.path.join(os.expan)
 
@@ -171,6 +174,8 @@ class Plot:
             self.ax.add_artist(Circle(goal, facecolor=parulacolor, **r_goal_kwargs))
             self.ax.add_artist(Circle(goal, **r_multi_kwargs))
 
+        self.navigator = Navigator.from_cache(self.cache)
+
         self.add_current()
         self.add_beta_gamma()
 
@@ -226,14 +231,32 @@ class Plot:
 class AnimatedPlot(Plot):
     def __init__(self, config_file, csv_file, **kwargs):
         self.t_multi = kwargs.pop('t_multi', 1)
+        self.robot_radius = 0.17  # iRobot Create2 is 34 cm in diameter
         super().__init__(config_file, csv_file, **kwargs)
 
     def plot_data(self):
         # create an empty line plot for the trajectory (data to be updated later)
         self.line, = self.ax.plot([], [], color='black', linewidth=2, solid_capstyle='round')
 
-        # create an arrow for the heading (position to be updated)
-        self.heading = self.ax.annotate('', xytext=(0, 0), xy=(0.5, 0.5), arrowprops=dict(shrink=0.3, color='red', width=1, headwidth=4, headlength=4))
+        # create a circle to highlight the currently active goal (position to be updated)
+        self.active_goal = Circle((0, 0), radius=r_goal_kwargs['radius'], facecolor='none', edgecolor='r', linewidth=2)
+        self.ax.add_artist(self.active_goal)
+
+        # create a circle for the robot itself (position to be updated)
+        self.robot = Circle((0, 0), radius=self.robot_radius, facecolor='none', edgecolor='k')
+        self.ax.add_artist(self.robot)
+
+        # create an arrow for the net velocity (position to be updated)
+        self.net_velocity = self.ax.annotate('', xytext=(0, 0), xy=(0.5, 0.5), arrowprops=dict(color='black', width=1, headwidth=4, headlength=4))
+
+        # create an arrow for the ocean velocity (position to be updated)
+        self.ocean_velocity = self.ax.annotate('', xytext=(0, 0), xy=(0.5, 0.5), arrowprops=dict(color='blue', width=1, headwidth=4, headlength=4))
+
+        # create an arrow for the agent velocity (position to be updated)
+        self.agent_velocity = self.ax.annotate('', xytext=(0, 0), xy=(0.5, 0.5), arrowprops=dict(color='green', width=1, headwidth=4, headlength=4))
+
+        # create an arrow for the robot's heading (position to be updated)
+        self.heading = self.ax.annotate('', xytext=(0, 0), xy=(self.robot_radius, self.robot_radius), arrowprops=dict(color='red', width=1, headwidth=4, headlength=4))
 
         self.anim = FuncAnimation(self.fig, self.update_animation, frames=np.unique(np.append(np.arange(0, len(self.T), 10), len(self.T)-1)))
 
@@ -248,11 +271,52 @@ class AnimatedPlot(Plot):
         self.anim.event_source.interval = delay
         self.t0 = t
 
+        try:
+            class HiddenPrints:
+                def __enter__(self):
+                    self._original_stdout = sys.stdout
+                    sys.stdout = open(os.devnull, 'w')
+                def __exit__(self, exc_type, exc_val, exc_tb):
+                    sys.stdout.close()
+                    sys.stdout = self._original_stdout
+            with HiddenPrints():
+                self.navigator.check_reached_goal(self.X[i], self.Y[i])  # keep units in mm for Navigator
+        except FinalGoalReached:
+            pass
+        dx_net, dy_net = self.navigator.net_velocity(self.X[i], self.Y[i])  # keep units in mm for Navigator
+        dx_current, dy_current = self.navigator._current_calculator.calculate(self.X[i], self.Y[i])  # keep units in mm for Navigator
+        dx_agent, dy_agent = dx_net - dx_current, dy_net - dy_current
+
+        # update the trajectory
         self.line.set_data(self.X[:i+1] / 1000, self.Y[:i+1] / 1000)  # convert mm to m
+
+        # update the active goal
+        self.active_goal.set_center((self.navigator._x_goal / 1000, self.navigator._y_goal / 1000))  # convert mm to m
+
+        # update the robot
+        self.robot.set_center((x, y))
+
+        # update the robot's heading
         self.heading.set_x(x)
         self.heading.set_y(y)
-        self.heading.xy = (x + 0.3 * np.cos(self.THETA[i]), y + 0.3 * np.sin(self.THETA[i]))
-        return self.line, self.heading
+        self.heading.xy = (x + self.robot_radius * np.cos(self.THETA[i]), y + self.robot_radius * np.sin(self.THETA[i]))
+
+        vector_shrink_factor = 150
+
+        # update the net velocity vector (units of mm/s divided by shrink factor)
+        self.net_velocity.set_x(x)
+        self.net_velocity.set_y(y)
+        self.net_velocity.xy = (x + dx_net / vector_shrink_factor, y + dy_net / vector_shrink_factor)
+
+        # update the ocean velocity vector (units of mm/s divided by shrink factor)
+        self.ocean_velocity.set_x(x)
+        self.ocean_velocity.set_y(y)
+        self.ocean_velocity.xy = (x + dx_current / vector_shrink_factor, y + dy_current / vector_shrink_factor)
+
+        # update the agent velocity vector (units of mm/s divided by shrink factor)
+        self.agent_velocity.set_x(x)
+        self.agent_velocity.set_y(y)
+        self.agent_velocity.xy = (x + dx_agent / vector_shrink_factor, y + dy_agent / vector_shrink_factor)
 
     def save(self, fname, *args, **kwargs):
         self.anim.save(fname, *args, **kwargs)

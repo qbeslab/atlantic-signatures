@@ -230,6 +230,7 @@ class Plot:
 
 class AnimatedPlot(Plot):
     def __init__(self, config_file, csv_file, **kwargs):
+        self.n = kwargs.pop('n', 5)
         self.t_multi = kwargs.pop('t_multi', 1)
         self.robot_radius = 0.17  # iRobot Create2 is 34 cm in diameter
         super().__init__(config_file, csv_file, **kwargs)
@@ -258,7 +259,10 @@ class AnimatedPlot(Plot):
         # create an arrow for the robot's heading (position to be updated)
         self.heading = self.ax.annotate('', xytext=(0, 0), xy=(self.robot_radius, self.robot_radius), arrowprops=dict(color='red', width=1, headwidth=4, headlength=4))
 
-        self.anim = FuncAnimation(self.fig, self.update_animation, frames=np.unique(np.append(np.arange(0, len(self.T), 5), len(self.T)-1)))
+        # create the animation
+        frames = np.arange(0, len(self.T), self.n)  # animate every nth data point
+        frames = np.unique(np.append(frames, len(self.T)-1))  # guarantee the final data point is included
+        self.anim = FuncAnimation(self.fig, self.update_animation, frames=frames)
 
     def update_animation(self, i):
         t = self.T[i]

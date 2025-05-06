@@ -77,7 +77,7 @@ def plot_run(args):
             if args.plot_type in ['all', 'animated']:
                 print(f'Animating "{file}"')
                 from atlantic_signatures.plotter.plot import AnimatedPlot
-                anim = AnimatedPlot(config_file.name, csv_file.name, t_multi=10)
+                anim = AnimatedPlot(config_file.name, csv_file.name, t_multi=10, n=args.n)
                 out_file = str(file.parent / (file.stem + '.gif'))
                 anim.save(out_file, fps=10)
                 print(f'Saved "{out_file}"')
@@ -154,6 +154,7 @@ def get_parser():
         choices=['all', 'static', 'animated'],
         help='The type of plot to generate (default: all)',
     )
+    plot_parser.add_argument('--n', '-n', type=int, nargs='?', default=5, help='Animate every n-th data point (default: 5)')
     plot_parser.set_defaults(func=plot_run)
 
     return main_parser

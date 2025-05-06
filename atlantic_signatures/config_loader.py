@@ -101,6 +101,7 @@ CONFIG_OPTIONS = {
     ('Current Properties', 'theta_fluid'): ('<quantity>', 5 * ureg.degree, 'degree'),
     ('Current Properties', 's_x'): ('<float>', 2.0, None),
     ('Current Properties', 's_y'): ('<float>', 1.0, None),
+    ('Goal Properties', 'circuits'): ('<int>', 1, None),
     ('Boundary Conditions', 'x_min'): ('<quantity>', -2.7432 * ureg.meter, 'meter'),
     ('Boundary Conditions', 'x_max'): ('<quantity>', 2.7432 * ureg.meter, 'meter'),
     ('Boundary Conditions', 'y_min'): ('<quantity>', -2.7432 * ureg.meter, 'meter'),
@@ -188,7 +189,8 @@ def config_to_dict(parser_object):
                 kwargs['fallback'] = default
 
             if section == 'Goal Properties':
-                id, unit = '<quantity>', 'meters'
+                if option != 'circuits':
+                    id, unit = '<quantity>', 'meters'
 
             if id == '<quantity>' and unit is not None:
                 kwargs['units'] = unit

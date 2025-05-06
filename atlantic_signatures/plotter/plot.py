@@ -167,7 +167,9 @@ class Plot:
            self.ax.add_artist(Circle(goal.m, **r_multi_kwargs))
         """
 
-        _goals = self.cache['Goal Properties'].values()
+        _goals = self.cache['Goal Properties'].copy()
+        _circuits = _goals.pop('circuits', 1)  # default circuits given here
+        _goals = _goals.values()
         for goal, parulacolor in zip(_goals, colors.PARULA_COLORMAP.get_spaced_colors(len(_goals))):
             #self.ax.plot(*goal.m, color=parulacolor, **goal_marker_kwargs)
             goal = np.array(goal) / 1000  # convert mm to m

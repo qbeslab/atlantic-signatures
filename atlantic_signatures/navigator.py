@@ -11,18 +11,20 @@ class FinalGoalReached(Exception):
     pass
 
 class Navigator:
-    def __init__(self, linear_velocity, goals, r_goal, r_multi, multimodal_method, field, current):
+    def __init__(self, linear_velocity, goals, r_goal, r_multi, multimodal_method, circuits, field, current):
         self._linear_velocity = linear_velocity
         self._goals = deque(goals.values())
         self._goal_count = len(goals)
         self._r_goal = r_goal
         self._r_multi = r_multi
         self._multimodal_method = multimodal_method
+        self._circuits = circuits
 
         self._field_calculator = field
         self._current_calculator = current
 
         self._current_goal_number = 0
+        self._current_circuit_number = 0
         self._update_goal()
 
         self.net_velocity = np.vectorize(self._point_net_velocity, excluded=['self'])
@@ -32,7 +34,10 @@ class Navigator:
 
         if d_goal <= self._r_goal:
             print()
-            print(f'Reached goal {self._current_goal_number} of {self._goal_count}')
+            if self._circuits == 1:
+                print(f'Reached goal {self._current_goal_number} of {self._goal_count}')
+            else:
+                print(f'Reached goal {1 + (self._current_goal_number-1) % self._goal_count} of {self._goal_count} (circuit {self._current_circuit_number} of {self._circuits})')
             print()
             self._update_goal()
             return True
@@ -44,14 +49,18 @@ class Navigator:
         Cache the coordinates of the current goal in Cartesian and
         'Beta-Gamma' space.
         """
-        if self._goals:
-            x, y = self._goals.popleft()
-            self._x_goal, self._y_goal = x, y
-            self._beta_goal, self._gamma_goal = self._field_calculator.calculate(x, y)
-            self._current_goal_number += 1
-        else:
+        self._current_goal_number += 1
+        if self._current_goal_number % self._goal_count == 1:
+            self._current_circuit_number += 1
+
+        if not self._goals or self._current_circuit_number > self._circuits:
             print('We have reached all goals...')
             raise FinalGoalReached
+
+        x, y = self._goals.popleft()
+        self._goals.append((x, y))  # add the goal to the back of the queue
+        self._x_goal, self._y_goal = x, y
+        self._beta_goal, self._gamma_goal = self._field_calculator.calculate(x, y)
 
     def _point_net_velocity(self, x, y):
         x_diff, y_diff = self._x_goal - x, self._y_goal - y
@@ -115,12 +124,15 @@ class Navigator:
 
     @classmethod
     def from_cache(cls, cache):
+        goals = cache['Goal Properties'].copy()
+        circuits = goals.pop('circuits', 1)  # default circuits given here
         return cls(
             linear_velocity=cache['Create Properties']['linear_velocity'],
-            goals=cache['Goal Properties'],
+            goals=goals,
             r_goal=cache['Create Properties']['r_goal'],
             r_multi=cache['Create Properties']['r_multi'],
             multimodal_method=cache['Create Properties']['multimodal_method'],
+            circuits=circuits,
             field=Field.from_cache(cache),
             current=Current.from_cache(cache),
             )

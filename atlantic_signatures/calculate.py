@@ -106,6 +106,7 @@ class Field:
         self._gamma_0 = kwargs.get('gamma_0', self.OPT_PARAMS['gamma_0'])
 
         self.calculate = np.vectorize(self._point_calculate, excluded=['self'])
+        self.inverse = np.vectorize(self._point_inverse, excluded=['self'])
 
     def _point_calculate(self, x, y):
         d_beta  = sum(i*j for i, j in zip(self._beta_0, (self._a_inc, self._b_inc, self._c_inc)))
@@ -121,6 +122,38 @@ class Field:
         gamma = self.remove_units(gamma)
 
         return beta, gamma
+
+    def _point_inverse(self, beta, gamma):
+        """
+        Find the (x, y) coordinate that give this (beta, gamma) magnetic signature.
+
+        Because the linearized magnetic field can be solved analytically, closed-form
+        exact solutions can be calculated here. In the general case of an arbitrary magnetic
+        field, numerical techniques will likely be needed (e.g., scipy.optimize.fsolve).
+        """
+
+        x = (self._b_inc * (self._a_int * self._gamma_0[0] + self._b_int * self._gamma_0[1] -
+            self._c_int * gamma) * self._eta * np.cos(self._theta_inc) +
+            self._a_inc * (self._a_int * self._gamma_0[0] + self._b_int * self._gamma_0[1] -
+                self._c_int * gamma) * self._eta * np.sin(self._theta_inc) + (self._c_inc * beta -
+            (self._a_inc * self._beta_0[0] + self._b_inc * self._beta_0[1]) * self._eta) * (self._b_int * np.cos(self._theta_int) +
+                self._a_int * np.sin(self._theta_int))) / ((self._a_int * self._b_inc -
+                self._a_inc * self._b_int) * self._eta * np.cos(self._theta_inc - self._theta_int) +
+            (self._a_inc * self._a_int + self._b_inc * self._b_int) * self._eta * np.sin(self._theta_inc - self._theta_int))
+
+        y = (-self._a_inc * (self._a_int * self._gamma_0[0] + self._b_int * self._gamma_0[1] -
+            self._c_int * gamma) * self._eta * np.cos(self._theta_inc) +
+            self._b_inc * (self._a_int * self._gamma_0[0] + self._b_int * self._gamma_0[1] -
+                self._c_int * gamma) * self._eta * np.sin(self._theta_inc) - (self._c_inc * beta -
+            (self._a_inc * self._beta_0[0] + self._b_inc * self._beta_0[1]) * self._eta) * (self._a_int * np.cos(self._theta_int) -
+                self._b_int * np.sin(self._theta_int))) / ((self._a_int * self._b_inc -
+                self._a_inc * self._b_int) * self._eta * np.cos(self._theta_inc - self._theta_int) +
+            (self._a_inc * self._a_int + self._b_inc * self._b_int) * self._eta * np.sin(self._theta_inc - self._theta_int))
+
+        x = self.remove_units(x)
+        y = self.remove_units(y)
+
+        return x, y
 
     @classmethod
     def from_cache(cls, cache):

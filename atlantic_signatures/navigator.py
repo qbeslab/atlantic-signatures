@@ -23,6 +23,12 @@ class Navigator:
         self._field_calculator = field
         self._current_calculator = current
 
+        # precompute magnetic signatures for all goals
+        self._magnetic_signatures = deque([])
+        for x_goal, y_goal in goals.values():
+            beta_goal, gamma_goal = self._field_calculator.calculate(x_goal, y_goal)
+            self._magnetic_signatures.append((float(beta_goal), float(gamma_goal)))
+
         self._current_goal_number = 0
         self._current_circuit_number = 0
         self._update_goal()
@@ -57,10 +63,11 @@ class Navigator:
             print('We have reached all goals...')
             raise FinalGoalReached
 
-        x, y = self._goals.popleft()
-        self._goals.append((x, y))  # add the goal to the back of the queue
-        self._x_goal, self._y_goal = x, y
-        self._beta_goal, self._gamma_goal = self._field_calculator.calculate(x, y)
+        self._x_goal, self._y_goal = self._goals.popleft()
+        self._goals.append((self._x_goal, self._y_goal))  # add the goal to the back of the queue
+
+        self._beta_goal, self._gamma_goal = self._magnetic_signatures.popleft()
+        self._magnetic_signatures.append((self._beta_goal, self._gamma_goal))  # add the goal's magnetic signature to the back of the queue
 
     def _point_net_velocity(self, x, y):
         x_diff, y_diff = self._x_goal - x, self._y_goal - y

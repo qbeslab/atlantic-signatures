@@ -245,6 +245,9 @@ class AnimatedPlot(Plot):
         self.active_goal = Circle((0, 0), radius=r_goal_kwargs['radius'], facecolor='none', edgecolor='r', linewidth=2)
         self.ax.add_artist(self.active_goal)
 
+        # create a cross showing the currently active magnetic signature (position to be updated)
+        self.active_magnetic_signature = self.ax.scatter([], [], marker='+', color='r')
+
         # create a circle for the robot itself (position to be updated)
         self.robot = Circle((0, 0), radius=self.robot_radius, facecolor='none', edgecolor='k')
         self.ax.add_artist(self.robot)
@@ -298,6 +301,10 @@ class AnimatedPlot(Plot):
 
         # update the active goal
         self.active_goal.set_center((self.navigator._x_goal / 1000, self.navigator._y_goal / 1000))  # convert mm to m
+
+        # update the active magnetic signature
+        mag_sig_x, mag_sig_y = self.navigator._field_calculator.inverse(self.navigator._beta_goal, self.navigator._gamma_goal)
+        self.active_magnetic_signature.set_offsets((mag_sig_x / 1000, mag_sig_y / 1000))  # convert mm to m
 
         # update the robot
         self.robot.set_center((x, y))

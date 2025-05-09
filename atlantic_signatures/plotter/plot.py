@@ -267,6 +267,7 @@ class AnimatedPlot(Plot):
         # create the animation
         frames = np.arange(0, len(self.T), self.n)  # animate every nth data point
         frames = np.unique(np.append(frames, len(self.T)-1))  # guarantee the final data point is included
+        self._last_i = -1
         self.anim = FuncAnimation(self.fig, self.update_animation, frames=frames)
 
     def update_animation(self, i):
@@ -280,18 +281,22 @@ class AnimatedPlot(Plot):
         self.anim.event_source.interval = delay
         self.t0 = t
 
-        try:
-            class HiddenPrints:
-                def __enter__(self):
-                    self._original_stdout = sys.stdout
-                    sys.stdout = open(os.devnull, 'w')
-                def __exit__(self, exc_type, exc_val, exc_tb):
-                    sys.stdout.close()
-                    sys.stdout = self._original_stdout
-            with HiddenPrints():
-                self.navigator.check_reached_goal(self.X[i], self.Y[i])  # keep units in mm for Navigator
-        except FinalGoalReached:
-            pass
+        # update the current goal and/or current circuit
+        for j in range(self._last_i+1, i+1):
+            try:
+                class HiddenPrints:
+                    def __enter__(self):
+                        self._original_stdout = sys.stdout
+                        sys.stdout = open(os.devnull, 'w')
+                    def __exit__(self, exc_type, exc_val, exc_tb):
+                        sys.stdout.close()
+                        sys.stdout = self._original_stdout
+                with HiddenPrints():
+                    self.navigator.check_reached_goal(self.X[j], self.Y[j])  # keep units in mm for Navigator
+            except FinalGoalReached:
+                pass
+        self._last_i = i
+
         dx_net, dy_net = self.navigator.net_velocity(self.X[i], self.Y[i])  # keep units in mm for Navigator
         dx_current, dy_current = self.navigator._current_calculator.calculate(self.X[i], self.Y[i])  # keep units in mm for Navigator
         dx_agent, dy_agent = dx_net - dx_current, dy_net - dy_current
@@ -330,6 +335,10 @@ class AnimatedPlot(Plot):
         self.agent_velocity.set_x(x)
         self.agent_velocity.set_y(y)
         self.agent_velocity.xy = (x + dx_agent / vector_shrink_factor, y + dy_agent / vector_shrink_factor)
+
+        # report the circuit number for multi-circuit only
+        if self.navigator._circuits > 1:
+            self.ax.set_title(f'Circuit {self.navigator._current_circuit_number} of {self.navigator._circuits}')
 
     def save(self, fname, *args, **kwargs):
         self.anim.save(fname, *args, **kwargs)

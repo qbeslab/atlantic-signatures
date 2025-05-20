@@ -26,7 +26,7 @@ class Navigator:
         # precompute magnetic signatures for all goals
         self._magnetic_signatures = deque([])
         for x_goal, y_goal in goals.values():
-            beta_goal, gamma_goal = self._field_calculator.calculate(x_goal, y_goal)
+            beta_goal, gamma_goal = self._field_calculator.calculate(x_goal, y_goal, n=0)
             self._magnetic_signatures.append((float(beta_goal), float(gamma_goal)))
 
         self._current_goal_number = 0
@@ -124,7 +124,7 @@ class Navigator:
                     raise ValueError(f"unrecognized multimodal pathing method: '{self._multimodal_method}', valid options: {possible_methods}")
 
         else:
-            beta, gamma = self._field_calculator.calculate(x, y)
+            beta, gamma = self._field_calculator.calculate(x, y, n=self._current_circuit_number-1)
             dx, dy = normalize([self._beta_goal - beta, self._gamma_goal - gamma])
 
             return (self._linear_velocity * dx + x_current, self._linear_velocity * dy + y_current)

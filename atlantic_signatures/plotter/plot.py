@@ -203,7 +203,7 @@ class Plot:
 
         V_X, V_Y = self.navigator._current_calculator.calculate(X, Y)
 
-        self.ax.quiver(X, Y, V_X, V_Y, color='grey')
+        self.current_plot = self.ax.quiver(X, Y, V_X, V_Y, color='grey')
 
     def add_beta_gamma(self):
         """
@@ -212,10 +212,10 @@ class Plot:
 
         X, Y = np.meshgrid(np.linspace(*self.ax.get_xlim(), 5), np.linspace(*self.ax.get_ylim(), 5))
 
-        beta, gamma = self.navigator._field_calculator.calculate(X, Y)
+        beta, gamma = self.navigator._field_calculator.calculate(X, Y, n=self.navigator._current_circuit_number-1)
 
-        Cb = self.ax.contour(X, Y, beta, **beta_kwargs)
-        Cg = self.ax.contour(X, Y, gamma, **gamma_kwargs)
+        self.beta_plot = self.ax.contour(X, Y, beta, **beta_kwargs)
+        self.gamma_plot = self.ax.contour(X, Y, gamma, **gamma_kwargs)
 
     def plot_data(self):
         # create a line plot for the trajectory
@@ -266,6 +266,7 @@ class AnimatedPlot(Plot):
         frames = np.arange(0, len(self.T), self.n)  # animate every nth data point
         frames = np.unique(np.append(frames, len(self.T)-1))  # guarantee the final data point is included
         self._last_i = -1
+        self._last_circuit_number = 1  # start at 1 so that initial field is not plotted twice
         self.anim = FuncAnimation(self.fig, self.update_animation, frames=frames)
 
     def update_animation(self, i):
@@ -299,6 +300,13 @@ class AnimatedPlot(Plot):
         dx_current, dy_current = self.navigator._current_calculator.calculate(self.X[i], self.Y[i])  # keep units in mm for Navigator
         dx_agent, dy_agent = dx_net - dx_current, dy_net - dy_current
 
+        # update beta/gamma contours when the circuit number increments
+        if self.navigator._current_circuit_number > self._last_circuit_number:
+            self.beta_plot.remove()
+            self.gamma_plot.remove()
+            self.add_beta_gamma()
+            self._last_circuit_number = self.navigator._current_circuit_number
+
         # update the trajectory
         self.line.set_data(self.X[:i+1] / 1000, self.Y[:i+1] / 1000)  # convert mm to m
 
@@ -306,7 +314,7 @@ class AnimatedPlot(Plot):
         self.active_goal.set_center((self.navigator._x_goal / 1000, self.navigator._y_goal / 1000))  # convert mm to m
 
         # update the active magnetic signature
-        mag_sig_x, mag_sig_y = self.navigator._field_calculator.inverse(self.navigator._beta_goal, self.navigator._gamma_goal)
+        mag_sig_x, mag_sig_y = self.navigator._field_calculator.inverse(self.navigator._beta_goal, self.navigator._gamma_goal, n=self.navigator._current_circuit_number-1)
         self.active_magnetic_signature.set_offsets((mag_sig_x / 1000, mag_sig_y / 1000))  # convert mm to m
 
         # update the robot

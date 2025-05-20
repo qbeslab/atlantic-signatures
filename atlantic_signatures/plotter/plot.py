@@ -203,7 +203,7 @@ class Plot:
 
         V_X, V_Y = self.navigator._current_calculator.calculate(X, Y)
 
-        self.current_plot = self.ax.quiver(X, Y, V_X, V_Y, color='grey')
+        self.current_plot = self.ax.quiver(X, Y, V_X, V_Y, color='grey', zorder=-2)
 
     def add_beta_gamma(self):
         """
@@ -214,8 +214,8 @@ class Plot:
 
         beta, gamma = self.navigator._field_calculator.calculate(X, Y, n=self.navigator._current_circuit_number-1)
 
-        self.beta_plot = self.ax.contour(X, Y, beta, **beta_kwargs)
-        self.gamma_plot = self.ax.contour(X, Y, gamma, **gamma_kwargs)
+        self.beta_plot = self.ax.contour(X, Y, beta, zorder=-1, **beta_kwargs)
+        self.gamma_plot = self.ax.contour(X, Y, gamma, zorder=-1, **gamma_kwargs)
 
     def plot_data(self):
         # create a line plot for the trajectory

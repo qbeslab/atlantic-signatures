@@ -159,7 +159,7 @@ class Field:
     def from_cache(cls, cache):
         values = itemgetter(*cls.REQ_PARAMS)(cache[cls.SECTION])
 
-        kwargs = {i: j for i, j in cache[cls.SECTION].items() if i in cls.SPECIAL_PARAMS}
+        kwargs = {i: j for i, j in cache[cls.SECTION].items() if i in cls.SPECIAL_PARAMS + tuple(cls.OPT_PARAMS)}
         kwargs.update({i: j for i, j in zip(cls.REQ_PARAMS, values)})
 
         return cls(**kwargs)

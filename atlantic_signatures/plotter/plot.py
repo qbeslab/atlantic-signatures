@@ -249,8 +249,11 @@ class AnimatedPlot(Plot):
         super().__init__(config_file, csv_file, **kwargs)
 
     def plot_data(self):
-        # create an empty line plot for the trajectory (data to be updated later)
-        self.trajectory, = self.ax.plot([], [], color='black', linewidth=2, solid_capstyle='round')
+        # create an empty transparent line plot for all past circuits (data to be updated later)
+        self.trajectory_previous_circuits, = self.ax.plot([], [], color='black', linewidth=2, solid_capstyle='round', alpha=0.4)
+
+        # create an empty opaque line plot for the current circuit (data to be updated later)
+        self.trajectory_this_circuit, = self.ax.plot([], [], color='black', linewidth=2, solid_capstyle='round')
 
         # create a circle to highlight the currently active goal (position to be updated)
         self.active_goal = Circle((0, 0), radius=r_goal_kwargs['radius'], facecolor='none', edgecolor='r', linewidth=2)
@@ -280,6 +283,7 @@ class AnimatedPlot(Plot):
         frames = np.unique(np.append(frames, len(self.T)-1))  # guarantee the final data point is included
         self._last_frame = -1
         self._current_circuit_number = 1  # start at 1 so that initial field is not plotted twice
+        self._current_circuit_starting_point = 0
         self.anim = FuncAnimation(self.fig, self.update_animation, frames=frames)
 
     def update_animation(self, i):
@@ -305,6 +309,7 @@ class AnimatedPlot(Plot):
                 if self.navigator._current_circuit_number > self._current_circuit_number:
                     # a new circuit was started
                     self._current_circuit_number = self.navigator._current_circuit_number
+                    self._current_circuit_starting_point = j
 
                     # update beta/gamma contours since the field may have changed with the circuit number
                     self.beta_plot.remove()
@@ -319,8 +324,11 @@ class AnimatedPlot(Plot):
         dx_current, dy_current = self.navigator._current_calculator.calculate(self.X[i], self.Y[i])  # keep units in mm for Navigator
         dx_agent, dy_agent = dx_net - dx_current, dy_net - dy_current
 
-        # update the trajectory
-        self.trajectory.set_data(self.X[:i+1] / 1000, self.Y[:i+1] / 1000)  # convert mm to m
+        # update the trajectory of all previous circuits (transparent line)
+        self.trajectory_previous_circuits.set_data(self.X[:self._current_circuit_starting_point+1] / 1000, self.Y[:self._current_circuit_starting_point+1] / 1000)  # convert mm to m
+
+        # update the trajectory of the current circuit (opaque line)
+        self.trajectory_this_circuit.set_data(self.X[self._current_circuit_starting_point:i+1] / 1000, self.Y[self._current_circuit_starting_point:i+1] / 1000)  # convert mm to m
 
         # update the active goal
         self.active_goal.set_center((self.navigator._x_goal / 1000, self.navigator._y_goal / 1000))  # convert mm to m

@@ -129,6 +129,19 @@ r_goal_kwargs['linewidth'] = 1
 
 
 
+class HiddenPrints:
+    """
+    Context manager for suppressing print() output
+    """
+    def __enter__(self):
+        self._original_stdout = sys.stdout
+        sys.stdout = open(os.devnull, 'w')
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout.close()
+        sys.stdout = self._original_stdout
+
+
+
 class Plot:
     def __init__(self, config_file, csv_file, **kwargs):
         self.cache = config_to_dict(Loader().read_config_file(config_file))
@@ -221,7 +234,7 @@ class Plot:
         # create a line plot for the trajectory
         x = self.X / 1000  # convert mm to m
         y = self.Y / 1000  # convert mm to m
-        self.line, = self.ax.plot(x, y, color='black', linewidth=2, solid_capstyle='round')
+        self.trajectory, = self.ax.plot(x, y, color='black', linewidth=2, solid_capstyle='round')
 
     def save(self, fname, *args, **kwargs):
         self.fig.savefig(fname, *args, **kwargs)
@@ -237,7 +250,7 @@ class AnimatedPlot(Plot):
 
     def plot_data(self):
         # create an empty line plot for the trajectory (data to be updated later)
-        self.line, = self.ax.plot([], [], color='black', linewidth=2, solid_capstyle='round')
+        self.trajectory, = self.ax.plot([], [], color='black', linewidth=2, solid_capstyle='round')
 
         # create a circle to highlight the currently active goal (position to be updated)
         self.active_goal = Circle((0, 0), radius=r_goal_kwargs['radius'], facecolor='none', edgecolor='r', linewidth=2)
@@ -265,8 +278,8 @@ class AnimatedPlot(Plot):
         # create the animation
         frames = np.arange(0, len(self.T), self.n)  # animate every nth data point
         frames = np.unique(np.append(frames, len(self.T)-1))  # guarantee the final data point is included
-        self._last_i = -1
-        self._last_circuit_number = 1  # start at 1 so that initial field is not plotted twice
+        self._last_frame = -1
+        self._current_circuit_number = 1  # start at 1 so that initial field is not plotted twice
         self.anim = FuncAnimation(self.fig, self.update_animation, frames=frames)
 
     def update_animation(self, i):
@@ -280,35 +293,34 @@ class AnimatedPlot(Plot):
         self.anim.event_source.interval = delay
         self.t0 = t
 
-        # update the current goal and/or current circuit
-        for j in range(self._last_i+1, i+1):
+        # run the Navigator through all data points between the last animation frame
+        # and the current one to see if the goal or circuit number needs updated
+        for j in range(self._last_frame+1, i+1):
             try:
-                class HiddenPrints:
-                    def __enter__(self):
-                        self._original_stdout = sys.stdout
-                        sys.stdout = open(os.devnull, 'w')
-                    def __exit__(self, exc_type, exc_val, exc_tb):
-                        sys.stdout.close()
-                        sys.stdout = self._original_stdout
+
                 with HiddenPrints():
+                    # check_reached_goal will update the Navigator's internal goal and circuit number if appropriate
                     self.navigator.check_reached_goal(self.X[j], self.Y[j])  # keep units in mm for Navigator
+
+                if self.navigator._current_circuit_number > self._current_circuit_number:
+                    # a new circuit was started
+                    self._current_circuit_number = self.navigator._current_circuit_number
+
+                    # update beta/gamma contours since the field may have changed with the circuit number
+                    self.beta_plot.remove()
+                    self.gamma_plot.remove()
+                    self.add_beta_gamma()
+
             except FinalGoalReached:
                 pass
-        self._last_i = i
+        self._last_frame = i
 
         dx_net, dy_net = self.navigator.net_velocity(self.X[i], self.Y[i])  # keep units in mm for Navigator
         dx_current, dy_current = self.navigator._current_calculator.calculate(self.X[i], self.Y[i])  # keep units in mm for Navigator
         dx_agent, dy_agent = dx_net - dx_current, dy_net - dy_current
 
-        # update beta/gamma contours when the circuit number increments
-        if self.navigator._current_circuit_number > self._last_circuit_number:
-            self.beta_plot.remove()
-            self.gamma_plot.remove()
-            self.add_beta_gamma()
-            self._last_circuit_number = self.navigator._current_circuit_number
-
         # update the trajectory
-        self.line.set_data(self.X[:i+1] / 1000, self.Y[:i+1] / 1000)  # convert mm to m
+        self.trajectory.set_data(self.X[:i+1] / 1000, self.Y[:i+1] / 1000)  # convert mm to m
 
         # update the active goal
         self.active_goal.set_center((self.navigator._x_goal / 1000, self.navigator._y_goal / 1000))  # convert mm to m

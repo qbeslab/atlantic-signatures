@@ -289,6 +289,7 @@ class AnimatedPlot(Plot):
         # create the animation
         frames = np.arange(0, len(self.T), self.n)  # animate every nth data point
         frames = np.unique(np.append(frames, len(self.T)-1))  # guarantee the final data point is included
+        print(f'Animating {len(frames)} frames')
         self._last_frame = -1
         self._current_circuit_number = 1  # start at 1 so that initial field is not plotted twice
         self._current_circuit_starting_point = 0

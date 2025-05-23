@@ -16,6 +16,9 @@ SIMS_DIR = os.path.join(os.getcwd(), 'simulations')
 
 class Simulation:
     def __init__(self, x0, y0, theta0=0.0, config_file=None):
+        self.x0 = x0
+        self.y0 = y0
+        self.theta0 = theta0
         self._pose = {'x': x0, 'y': y0, 'theta': theta0}  # radians expected for theta0
         self._new_pose = self._pose
         self._default_v = 100

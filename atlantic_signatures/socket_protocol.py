@@ -43,7 +43,7 @@ class PACKETS(IntFlag):
 
 
 # Magic numbers
-HEADERLEN = 3
+HEADERLEN = 4
 MAXBYTES  = 10**HEADERLEN
 
 # Port 10,000 is the default port but we cannot guarantee that some other

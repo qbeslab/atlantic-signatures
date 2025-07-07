@@ -250,7 +250,7 @@ class AnimatedPlot(Plot):
 
         # prepare a data structure for storing the moving locations of magnetic signatures
         self.active_magnetic_signature_paths = {}
-        for i in range(self.navigator._goal_count):
+        for i in range(1, self.navigator._goal_count + 1):  # goal numbers are 1-indexed
             self.active_magnetic_signature_paths[i] = []
 
     def plot_data(self):
@@ -326,9 +326,10 @@ class AnimatedPlot(Plot):
                     self.add_beta_gamma()
 
                 # store the location of the current active magnetic signature if it is new
-                if len(self.active_magnetic_signature_paths[self.navigator._current_goal_number % self.navigator._goal_count]) < self.navigator._current_circuit_number:
+                # - the location will remain unchanged if time-varying magnetic fields are not used
+                if len(self.active_magnetic_signature_paths[self.navigator.current_goal_number]) < self.navigator._current_circuit_number:
                     mag_sig_x, mag_sig_y = self.navigator._field_calculator.inverse(self.navigator._beta_goal, self.navigator._gamma_goal, n=self.navigator._current_circuit_number-1)
-                    self.active_magnetic_signature_paths[self.navigator._current_goal_number % self.navigator._goal_count].append(np.array([mag_sig_x / 1000, mag_sig_y / 1000]))  # convert mm to m
+                    self.active_magnetic_signature_paths[self.navigator.current_goal_number].append(np.array([mag_sig_x / 1000, mag_sig_y / 1000]))  # convert mm to m
 
             except FinalGoalReached:
                 pass
@@ -348,7 +349,7 @@ class AnimatedPlot(Plot):
         self.active_goal.set_center((self.navigator._x_goal / 1000, self.navigator._y_goal / 1000))  # convert mm to m
 
         # update the active magnetic signature path
-        active_magnetic_signature_path = np.array(self.active_magnetic_signature_paths[self.navigator._current_goal_number % self.navigator._goal_count])
+        active_magnetic_signature_path = np.array(self.active_magnetic_signature_paths[self.navigator.current_goal_number])
         self.active_magnetic_signature_path.set_data(active_magnetic_signature_path[:,0], active_magnetic_signature_path[:,1])
 
         # update the active magnetic signature marker

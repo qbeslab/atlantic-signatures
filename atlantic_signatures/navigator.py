@@ -35,15 +35,20 @@ class Navigator:
 
         self.net_velocity = np.vectorize(self._point_net_velocity, excluded=['self'])
 
+    @property
+    def current_goal_number(self):
+        '''The current goal number (1-indexed)'''
+        return 1 + (self._current_goal_number-1) % self._goal_count
+
     def check_reached_goal(self, x, y):
         d_goal = np.linalg.norm([self._x_goal - x, self._y_goal - y])
 
         if d_goal <= self._r_goal:
             print()
             if self._circuits == 1:
-                print(f'Reached goal {self._current_goal_number} of {self._goal_count}')
+                print(f'Reached goal {self.current_goal_number} of {self._goal_count}')
             else:
-                print(f'Reached goal {1 + (self._current_goal_number-1) % self._goal_count} of {self._goal_count} (circuit {self._current_circuit_number} of {self._circuits})')
+                print(f'Reached goal {self.current_goal_number} of {self._goal_count} (circuit {self._current_circuit_number} of {self._circuits})')
             print()
             self._update_goal()
             return True
@@ -56,7 +61,7 @@ class Navigator:
         'Beta-Gamma' space.
         """
         self._current_goal_number += 1
-        if self._current_goal_number % self._goal_count == 1:
+        if self.current_goal_number == 1:
             self._current_circuit_number += 1
 
         if not self._goals or self._current_circuit_number > self._circuits:

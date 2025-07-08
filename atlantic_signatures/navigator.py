@@ -11,13 +11,14 @@ class FinalGoalReached(Exception):
     pass
 
 class Navigator:
-    def __init__(self, linear_velocity, goals, r_goal, r_multi, multimodal_method, circuits, field, current):
+    def __init__(self, linear_velocity, goals, r_goal, r_multi, multimodal_method, secular_variation_strategy, circuits, field, current):
         self._linear_velocity = linear_velocity
         self._goals = deque(goals.values())
         self._goal_count = len(goals)
         self._r_goal = r_goal
         self._r_multi = r_multi
         self._multimodal_method = multimodal_method
+        self._secular_variation_strategy = secular_variation_strategy
         self._circuits = circuits
 
         self._field_calculator = field
@@ -60,6 +61,28 @@ class Navigator:
         Cache the coordinates of the current goal in Cartesian and
         'Beta-Gamma' space.
         """
+
+        if hasattr(self, '_x_goal') and hasattr(self, '_y_goal'):  # don't do this on initialization
+
+            # before updating the goal, implement compensatory strategies for dealing with a time-varying magnetic field
+            possible_strategies = ['none', 'imprint']
+
+            match self._secular_variation_strategy:
+                case 'none':
+                    # NO STRATEGY
+                    # do nothing to compensate for the time-varying magnetic field
+                    pass
+
+                case 'imprint':
+                    # SIMPLE IMPRINT STRATEGY
+                    # imprint on the current magnetic signature for the goal that was just found using the current circuit's magnetic field
+                    beta_goal, gamma_goal = self._field_calculator.calculate(self._x_goal, self._y_goal, n=self._current_circuit_number-1)
+                    self._magnetic_signatures.pop()  # remove the out-dated magnetic signature
+                    self._magnetic_signatures.append((beta_goal, gamma_goal))
+
+                case _:
+                    raise ValueError(f"unrecognized secular variation strategy: '{self._secular_variation_strategy}', valid options: {possible_strategies}")
+
         self._current_goal_number += 1
         if self.current_goal_number == 1:
             self._current_circuit_number += 1
@@ -144,6 +167,7 @@ class Navigator:
             r_goal=cache['Create Properties']['r_goal'],
             r_multi=cache['Create Properties']['r_multi'],
             multimodal_method=cache['Create Properties']['multimodal_method'],
+            secular_variation_strategy=cache['Create Properties']['secular_variation_strategy'],
             circuits=circuits,
             field=Field.from_cache(cache),
             current=Current.from_cache(cache),

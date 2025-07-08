@@ -264,7 +264,7 @@ class AnimatedPlot(Plot):
         self.active_goal = Circle((0, 0), radius=r_goal_kwargs['radius'], facecolor='none', edgecolor='r', linewidth=2)
         self.ax.add_artist(self.active_goal)
 
-        # create a line showing the path taken by the currently active magnetic signature over time (data to be updated later)
+        # create a line showing the path taken by the original magnetic signature associated with the currently active goal over time (data to be updated later)
         self.active_magnetic_signature_path, = self.ax.plot([], [], color='r', linewidth=1, solid_capstyle='round', zorder=1)
 
         # create a cross showing the currently active magnetic signature (position to be updated)
@@ -325,10 +325,16 @@ class AnimatedPlot(Plot):
                     self.gamma_plot.remove()
                     self.add_beta_gamma()
 
-                # store the location of the current active magnetic signature if it is new
+                # store the location of the original magnetic signature associated with the currently active goal, if it is new
                 # - the location will remain unchanged if time-varying magnetic fields are not used
                 if len(self.active_magnetic_signature_paths[self.navigator.current_goal_number]) < self.navigator._current_circuit_number:
-                    mag_sig_x, mag_sig_y = self.navigator._field_calculator.inverse(self.navigator._beta_goal, self.navigator._gamma_goal, n=self.navigator._current_circuit_number-1)
+                    # retrieve this goal's original magnetic signature, before any time-varying field changes
+                    beta_original, gamma_original = self.navigator._field_calculator.calculate(self.navigator._x_goal, self.navigator._y_goal, n=0)
+
+                    # determine where that original magnetic signature has moved to in the current circuit
+                    mag_sig_x, mag_sig_y = self.navigator._field_calculator.inverse(beta_original, gamma_original, n=self.navigator._current_circuit_number-1)
+
+                    # store the displaced location of the original magnetic signature so its path can be plotted
                     self.active_magnetic_signature_paths[self.navigator.current_goal_number].append(np.array([mag_sig_x / 1000, mag_sig_y / 1000]))  # convert mm to m
 
             except FinalGoalReached:
@@ -349,11 +355,19 @@ class AnimatedPlot(Plot):
         self.active_goal.set_center((self.navigator._x_goal / 1000, self.navigator._y_goal / 1000))  # convert mm to m
 
         # update the active magnetic signature path
+        # - this plots trajectory of the original magnetic signature associated with the currently active goal
         active_magnetic_signature_path = np.array(self.active_magnetic_signature_paths[self.navigator.current_goal_number])
         self.active_magnetic_signature_path.set_data(active_magnetic_signature_path[:,0], active_magnetic_signature_path[:,1])
 
         # update the active magnetic signature marker
-        self.active_magnetic_signature.set_offsets(active_magnetic_signature_path[-1])
+        # - with a time-varying magnetic field and no compensatory mechanism enabled,
+        #   this will drift away from the true goal, following the trajectory of the original
+        #   magnetic signature associated with the currently active goal, plotted above, because
+        #   the magnetic signature has not changed
+        # - with imprinting, this should shift away from the true goal by only one circuit-time step,
+        #   even as the trajectory of the original magnetic signature grows away from the goal
+        mag_sig_x, mag_sig_y = self.navigator._field_calculator.inverse(self.navigator._beta_goal, self.navigator._gamma_goal, n=self.navigator._current_circuit_number-1)
+        self.active_magnetic_signature.set_offsets((mag_sig_x / 1000, mag_sig_y / 1000))  # convert mm to m
 
         # update the robot
         self.robot.set_center((x, y))

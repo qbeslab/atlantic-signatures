@@ -116,6 +116,7 @@ CONFIG_OPTIONS = {
     ('Create Properties', 'agent_time_step'): ('<quantity>', 1.0 * ureg.sec, 'second'),
     ('Create Properties', 'angle_cutoff'): ('<quantity>', 1 * ureg.degree, 'degree'),
     ('Create Properties', 'multimodal_method'): ('<string>', 'direct', None),
+    ('Create Properties', 'secular_variation_strategy'): ('<string>', 'none', None),
     ('Create Properties', 'r_multi'): ('<quantity>', 0.1 * ureg.meter, 'meter'),
     ('Create Properties', 'r_goal'): ('<quantity>', 0.5 * ureg.meter, 'meter'),
     }

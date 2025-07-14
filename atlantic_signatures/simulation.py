@@ -215,13 +215,16 @@ class Simulation:
             # else:
             #     turn_v, r = delta, 'rotate_ccw'
             # self._create._drive(max(turn_v, 30), r=r)
+            # time.sleep(0.1)
+            # self._create._drive(0)  # stop moving and wait for next command
             self.simulate_turn(0.1 * delta)  # SIMPLIFIED FOR SIMULATION, small coefficient allows for angle_cutoff to have a more realistic effect
-            # time.sleep(0.1)  # REMOVED FOR SIMULATION
+                                             # TODO: figure out the exact speed and duration needed to perform a precise turn
 
         else:
             # self._create._drive(V, r='straight')
+            # time.sleep(self._time_step)
+            # self._create._drive(0)  # stop moving and wait for next command
             self.simulate_straight(self._time_step * V)  # SIMPLIFIED FOR SIMULATION
-            # time.sleep(self._time_step)  # REMOVED FOR SIMULATION
 
     ############################################################################
     # SIMULATED MOVEMENT EXECUTION                                             #

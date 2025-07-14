@@ -178,12 +178,14 @@ class Client(Protocol):
                 turn_v, r = -delta, 'rotate_cw'
             else:
                 turn_v, r = delta, 'rotate_ccw'
-            self._create._drive(max(turn_v, 30), r=r)
+            self._create._drive(max(turn_v, 30), r=r)  # TODO: figure out the exact speed and duration needed to perform a precise turn
             time.sleep(0.1)
+            self._create._drive(0)  # stop moving and wait for next command
 
         else:
             self._create._drive(V, r='straight')
             time.sleep(self._time_step)
+            self._create._drive(0)  # stop moving and wait for next command
 
     def recv_start(self, payload):
         """

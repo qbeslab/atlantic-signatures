@@ -1,0 +1,2 @@
+sphinxcontrib-video
+sphinx_rtd_theme

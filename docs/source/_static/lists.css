@@ -1,0 +1,5 @@
+/* compact spacing in the main table of contents */
+.rst-content .toctree-wrapper ul li > ul {
+    margin-top: 0;
+    margin-bottom: 0;
+}

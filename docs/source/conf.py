@@ -21,11 +21,17 @@ exclude_patterns = []
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
+# https://alabaster.readthedocs.io/en/latest/customization.html
 
-import sphinx_rtd_theme
-html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
-html_css_files = ['lists.css']
+html_theme = 'alabaster'
 html_theme_options = {
-    'prev_next_buttons_location': 'bottom',
+    'description': 'Bioinspired magnetic navigation software for the iRobot '
+                   'Create 2 and Vicon motion capture',
+    'description_font_style': 'italic',
+    'font_family': 'Arial',
+    'page_width': '1200px',  # default is 940
+    'sidebar_width': '280px',  # default is 220
+    'show_relbars': True,
+    'fixed_sidebar': True,
 }
+html_static_path = ['_static']

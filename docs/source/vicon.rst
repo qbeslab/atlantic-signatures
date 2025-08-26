@@ -15,9 +15,6 @@ terminology and equipment. If you wish to learn more about Vicon cameras and the
 tracking software go to the corresponding section of the Vicon documentation
 website: https://docs.vicon.com/
 
-.. contents::
-    :local:
-
 Lab Layout
 ==========
 
@@ -85,9 +82,6 @@ Calibration Walkthrough
 
 Now that we are familiar with the Vicon equipment and software we can now get the cameras
 ready for data collection.
-
-.. contents::
-    :local:
 
 Setup Hardware and Software
 ===========================

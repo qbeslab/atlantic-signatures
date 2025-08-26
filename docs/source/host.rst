@@ -10,8 +10,6 @@ Goals of this Guide
 
 #. Install the atlantic_signatures package and its dependencies
 
-.. contents:: Table of Contents
-
 Step 1: Get Anaconda
 ====================
 Anaconda is an extremely useful python packaging ecosystem with a focus on

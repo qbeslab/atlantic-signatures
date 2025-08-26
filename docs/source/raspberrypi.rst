@@ -19,9 +19,6 @@ Goals of this Guide
 
 #. Troubleshoot Errors
 
-.. contents:: Table of Contents
-
-
 ---------
 Materials
 ---------

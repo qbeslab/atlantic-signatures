@@ -2,26 +2,27 @@
 Getting Started with Vicon
 ==========================
 
-This guide will first introduce the equipment, methods, and other notable information.
-Following the introduction, this guide presents the step-by-step checklist I go through
-as soon as I walk in to the lab.
+This guide will first introduce the Vicon camera equipment, methods, and other
+notable information. Following the introduction, this guide presents a
+step-by-step calibration walkthrough.
 
 ------------
 Introduction
 ------------
 
 Before we jump to the how-to part of this guide it is prudent to know the
-terminology and equipment. If you wish to learn more about Vicon cameras and their
-tracking software go to the corresponding section of the Vicon documentation
-website: https://docs.vicon.com/
+terminology and equipment. If you wish to learn more about Vicon cameras and
+their tracking software go to the corresponding section of the Vicon
+documentation website: https://docs.vicon.com/
 
 Lab Layout
 ==========
 
 .. figure:: images/lab-layout.svg
+    :height: 600
 
     Blue arrows designate ethernet connections while black arrows designate
-    power connections
+    power connections. UPS: Uninterruptible Power Supply.
 
 Hardware
 ========
@@ -38,33 +39,36 @@ When the user wishes to start up the cameras all they need to do is plug the
 power cable of the ethernet hub directly into the UPS. Connect the hub into the
 port at the back of the UPS titled "Surge + Battery" like the following:
 
-.. image:: images/ups.svg
+.. figure:: images/ups.svg
+    :height: 600
 
 Once connected you will hear a fan rev up and see the lights on the cameras
 turn on.
 
-Next, the user should log on to their UNC account on the Host computer. Type in
-"Vicon" into the Windows search. Vicon Tracker 3.7.0 x64 (or some later version)
-should appear. If Vicon Tracker does not appear for some reason do not hesitate
-to contact Brian.
+Next, turn on the Host computer if it's not on already. Open the Start Menu and
+type in "Vicon" in the search bar. Vicon Tracker 3.7.0 x64 (or some later
+version) should appear. Vicon Tracker (green icon) should also be visible on
+the desktop. Open the program.
 
-.. image:: images/tracker_in_win_search.png
+.. figure:: images/tracker_in_win_search.png
+    :height: 400
 
-Once loaded, Vicon Tracker will welcome you with the "resources pane" on the
+Once loaded, Vicon Tracker will welcome you with the "Resources" pane on the
 left side of the screen and a much larger camera perspective pane on the right.
 Don't worry if the cameras are red instead of green - that's why we calibrate!
 Please familiarize yourself with the layout before moving on.
 
-.. image:: images/vicon-tracker-first-screen.png
+.. figure:: images/vicon-tracker-first-screen.png
+    :height: 400
 
-There are four tabs in the resources pane: System, Calibrate, Objects, and
+There are four tabs in the Resources pane: System, Calibrate, Objects, and
 Recording. The first three are the only ones of importance since we do not take
 any recordings using Vicon. The System tab contains settings that you will never
 change but a problem camera can be rebooted from here by right clicking the
-camera and selecting "reboot". Note: rebooting a camera will necessitate a new
-calibration. The Calibrate tab is fairly self explanatory and finally the Objects
-tab allows you to select and deselect objects that the cameras will track. The
-Create's typically will have an object name like 'Create2' or 'Create2-1'.
+camera and selecting "Reboot". The Calibrate tab will be explained in detail
+in the next section. Finally, the Objects tab allows you to select and deselect
+objects that the cameras will track. The Create robots typically will have an
+object name like 'Create2' or 'Create2-1'.
 
 .. table:: The three main tabs you will be bouncing between
     :align: center
@@ -80,31 +84,36 @@ Create's typically will have an object name like 'Create2' or 'Create2-1'.
 Calibration Walkthrough
 -----------------------
 
-Now that we are familiar with the Vicon equipment and software we can now get the cameras
-ready for data collection.
+Now that we are familiar with the Vicon equipment and software we can now get
+the cameras ready for data collection.
 
 Setup Hardware and Software
 ===========================
 
-Connect the Ethernet hub power cord to the "Surge + Battery" port at the back of the UPS. If you
-do not hear the sound of the hub's fan or see the lights on the cameras make sure the UPS itself
-is connected to an outlet.
+Connect the Ethernet hub power cord to the "Surge + Battery" port at the back of
+the UPS. If you do not hear the sound of the hub's fan or see the lights on the
+cameras make sure the UPS itself is connected to an outlet.
 
-Log on to your UNC account and run "Vicon Tracker" as an administrator.
+Start up the lab computer and run "Vicon Tracker".
 
-Pre Calibration Checklist
+.. note::
+
+    In the original version of these docs, created for Brian's lab at UNC, Luc
+    wrote that Vicon Tracker should be run as administrator. In 2025 at CWRU,
+    Jeff did not find this to be necessary.
+
+Pre-Calibration Checklist
 =========================
 
-Before calibrating the cameras. Do note the following about the lab itself:
+Before calibrating the cameras, do note the following about the lab itself:
 
     * Is the mat clear of debris?
 
         * There should be nothing but tape on the mat.
 
-    * Is the current weather cloudy or sunny? If sunny, are the window blinds open?
+    * Are there new reflective surfaces in view of the cameras?
 
-        * Reflections will always be your number 1 problem when calibrating so
-          you should opt to close the blinds on all but the most cloudy of days
+        * Reflections will always be your number 1 problem when calibrating
 
         * The lab's artificial lighting is not a concern thanks to the black
           rubber mat so you don't have to turn off the lights
@@ -112,44 +121,46 @@ Before calibrating the cameras. Do note the following about the lab itself:
     * Are there Roombas lying around?
 
         * Any Roomba with markers on top of it can mess up a calibration and
-          should be sequestered. The Roombas can be placed in one of the drawers
-          found in the lab island or simply move it so it is off the mat and
-          away from the line sight of any camera. Deselecting any tracked objects
-          found in the Objects tab will also help but isn't necessary.
+          should be sequestered away from the line sight of any camera, such as
+          against the wall at the changing docks. Deselecting any tracked
+          objects found in the Objects tab will also help but isn't necessary.
 
 Create Camera Masks
 ===================
 
-Even after closing the blinds reflections remain. A feature known as "camera masking"
-allows you to purposefully obscure sections of a camera's vision. The
+Even after taking these steps, reflections remain. A feature known as "camera
+masking" allows you to purposefully obscure sections of a camera's vision. The
 justification is that erroneous tracking data and bad calibrations are worse
-than a camera blind spot. To create camera masks go to the calibrate tab and
+than a camera blind spot. To create camera masks go to the Calibrate tab and
 select "Start" under "Create Camera Masks". You should see bluish squares appear
 and disappear in the field of view for each camera. After several seconds the
-squares should've settled down and you can now select "stop". If these squares
-make up a large chunk of a camera(s) view then chances are the blinds are open
-and you will need to close them.
+squares should've settled down and you can now select "Stop". If these squares
+make up a large chunk of the view of one or more cameras then chances are there
+are problematic reflections in the room that should be eliminated.
 
-.. image:: images/vicon-tracker-camera-masks.png
+.. figure:: images/vicon-tracker-camera-masks.png
+    :height: 400
 
 Calibrate Cameras
 =================
 
-We are now ready to truly calibrate! Grab one the "magic wands" found on the lab
-island. Now select Start under "Calibrate Cameras" in the Calibrate tab. You
-should now turn on the magic wand lights and begin walking around the periphery
-of the mat while simultaneously waving the wand at the cameras. The ideal
-calibration method is to swing the wand by turning your wrist while traveling in
-a circle around the perimeter of the mat area and also spinning to face each
-camera for a second or two (think how the earth revolves around the sun while
-also rotating around its own axis). As the calibration progresses, the camera
-lights will blink faster and faster until it is a solid green indicating it is
-done. Some cameras will calibrate faster than others, this is perfectly normal
-but ideally the faster a camera is blinking the less time you should face it and
-give more time to the slower blinking or less calibrated cameras. To visualize
-this, refer to the video below of a complete calibration.
+We are now ready to truly calibrate! Grab one the "magic wands" hanging on the
+side of the lab cabinet. Now select Start under "Calibrate Cameras" in the
+Calibrate tab. You should now turn on the magic wand lights and begin walking
+around the periphery of the mat while simultaneously waving the wand at the
+cameras. The ideal calibration method is to swing the wand by turning your wrist
+while traveling in a circle around the perimeter of the mat area and also
+spinning to face each camera for a second or two (think how the earth revolves
+around the sun while also rotating around its own axis). As the calibration
+progresses, the camera lights will blink faster and faster until it is a solid
+green, indicating it is done. Some cameras will calibrate faster than others.
+This is perfectly normal but ideally the faster a camera is blinking the less
+time you should face it and give more time to the slower blinking or less
+calibrated cameras. To visualize this, refer to the video below of a complete
+calibration.
 
 .. figure:: images/vicon-magic-wand.png
+    :height: 300
 
     A calibration magic wand.
 
@@ -159,6 +170,7 @@ Calibration Video Demonstration
 .. video:: videos/edit2.mp4
     :width: 720
     :height: 480
+    :muted:
 
 Setting the Volume Origin
 =========================
@@ -169,8 +181,10 @@ the mat. Line up both axes to the best of your abilities like in the below
 picture:
 
 .. figure:: images/vicon-magic-wand-origin.jpg
+    :height: 600
 
-    Unlike in the image, make sure the lights of the wand are still on.
+    Unlike in the image, make sure the lights of the wand are still on when
+    setting the volume origin!
 
 Go back to the host computer, click "START" under "Set Volume Origin" followed
 by another click to "SET ORIGIN". To check if the calibration worked, the
@@ -180,18 +194,68 @@ the drop-down menu titled "Camera" - this menu is just to the left of "View" in
 the top left corner of the view pane.
 
 .. figure:: images/vicon-tracker-bad-calibration.png
+    :height: 400
 
-    An obviously bad calibration.
+    This calibration obviously did not go well, since the cameras are not
+    positioned properly.
 
 It is not unusual to have to recalibrate several times after a bad calibration.
 Always look for ways to reduce reflections and you should time your walking
 pace around the mat so that the last camera is calibrated just as you finish a
-lap. walking around too fast or too slow can both lead to a bad calibration, for
-me the sweet spot pace is between 1 and 1.5 minutes.
+lap. Walking around too fast or too slow can both lead to a bad calibration.
+(For Luc the sweet spot pace was between 1 and 1.5 minutes. Jeff usually took
+longer!)
 
 .. figure:: images/good-calibration.png
+    :height: 400
 
     A successful calibration.
 
-If your view pane looks like the above figure then you are ready to move on to setting
-up the Raspberry Pi!
+If your view pane looks like the above figure then you are ready to move on to
+setting up the Raspberry Pi!
+
+-----------------------
+Troubleshooting Cameras
+-----------------------
+
+Sometimes one camera, or a few, will spontaneously disconnect. You will see
+their corresponding icon in the System pane change from green to red, indicating
+a data connection issue. In the perspecive view, a camera may change from green
+to red, or may disappear from view entirely. As of 2025, it was unclear to Jeff
+what caused these frequent problems. Here are some tips for dealing with this
+issue.
+
+There are two levels of loss of connection. In the less severe case, you can
+issue a "Restart" command to the camera by right-clicking on it in the System
+pane. In the more severe case, this won't be an option because the camera will
+have gone entirely incommunicado; in this case, you need to cycle the power on
+the camera by unplugging its ethernet cable from the hub. Wait ~30 seconds
+before plugging it back in. If you have multiple cameras that need restarted,
+try plugging them back in one at a time, with some time between each.
+
+Occasionally, restarting cameras fixes the problem for the rest of the day. More
+commonly, the same camera(s) will disconnect again and again in one day. In the
+worst cases, it may be necessary to just keep a problematic camera disconnected
+for the remainder of the day. There is enough redundancy in line of sight of the
+cameras that you can lose several and you will still be able to track the
+robots.
+
+Looking at patterns across many days, Jeff observed some cameras are more likely
+to misbehave than others, although there is a surprising amount of randomness to
+it. He speculated (wildly!) that perhaps visual noise from reflections might
+overload some cameras' point tracking capabilities, but he would readily admit
+that he doesn't know whether that processing happens in the camera hardware (in
+which case an underpowered CPU/GPU might theoretically fail to keep up with a
+large number of points) or if this happens for all cameras at the desktop
+computer (in which case it would be more surprising that a hardware
+disconnection would result). Jeff once tried adjusting all of the cameras'
+field-of-view, focus, and aperture opening, and he noticed a big improvement in
+the cameras' connectivity for a while, suggesting to him that the recurring
+connectivity problem has something to do with what the cameras actually see. But
+this improved performance didn't last forever. Disconnections (and failed
+calibrations) seemed to become more common when other lab personnel sharing the
+space placed large objects with reflective surfaces on the perimeter of the mat.
+One would think that masking should help with this, but it is conceivable that
+masking happens at the desktop after the camera hardware has done point
+discrimination, in which case masking would not help with this visual noise
+"overload" problem -- but again these are Jeff's wild speculations!

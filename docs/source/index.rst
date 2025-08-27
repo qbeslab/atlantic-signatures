@@ -20,3 +20,4 @@ Table of Contents
    test
    usage
    docs
+   api

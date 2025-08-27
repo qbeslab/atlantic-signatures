@@ -12,6 +12,8 @@
             "args": [
                 "docs/source",
                 "docs/build/html",
+                "--watch", "atlantic_signatures",
+                "--ignore", "*__pycache__*",
                 "--open-browser"
             ]
         }

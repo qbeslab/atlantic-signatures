@@ -1,6 +1,7 @@
 """
-
+The :mod:`atlantic_signatures.host` module implements ... TODO
 """
+
 from __future__ import absolute_import, print_function
 import os
 import os.path
@@ -18,12 +19,24 @@ DATA_DIR = os.path.join(os.getcwd(), 'data')
 
 
 def lazy_load_vicon():
+    """
+    TODO
+    """
+
     global ViconDataStream
     from vicon_dssdk import ViconDataStream
 
 
 class Host(Protocol):
+    """
+    TODO
+    """
+
     def __init__(self, config_file=None, objectname=None, host=None, timeout=30):
+        """
+        TODO
+        """
+
         if config_file is None:
             raise RuntimeError('No config file was provided')
         if not os.path.isabs(config_file):
@@ -60,6 +73,10 @@ class Host(Protocol):
 
 
     def start(self):
+        """
+        TODO
+        """
+
         self._start_vicon()
         self._start_host()
         self._vicon_client.GetFrame()
@@ -80,6 +97,10 @@ class Host(Protocol):
         self.send_loop()
 
     def send_loop(self):
+        """
+        TODO
+        """
+
         try:
             print('Sending data to client periodically')
             print()
@@ -109,6 +130,10 @@ class Host(Protocol):
             print('Socket has been closed')
 
     def _start_host(self):
+        """
+        TODO
+        """
+
         raise_err = False
 
         for port in (PORT, ALT_PORT):
@@ -143,6 +168,10 @@ class Host(Protocol):
 
 
     def _start_vicon(self):
+        """
+        TODO
+        """
+
         try:
             self._vicon_client = ViconDataStream.Client()
             self._vicon_client.Connect('BIO-TAYLORL02-5820:801')
@@ -169,6 +198,10 @@ class Host(Protocol):
             sys.exit(1)
 
     def send_data(self, *, level=0):
+        """
+        TODO
+        """
+
         if level > 9:
             print(
                 'The Create has been occluded for the past 10 frames and is '
@@ -196,6 +229,10 @@ class Host(Protocol):
             raise
 
     def send_config(self, config_file):
+        """
+        TODO
+        """
+
         config = config_to_dict(Loader().read_config_file(config_file))
         print("Sending config file: %s with the following parameters:" % config_file)
         for section, params in config.items():

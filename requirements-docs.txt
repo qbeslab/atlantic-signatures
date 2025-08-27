@@ -1,0 +1,5 @@
+sphinx
+sphinx-autobuild
+sphinxcontrib-programoutput
+sphinxcontrib-video
+matplotlib  # needed to import plot module

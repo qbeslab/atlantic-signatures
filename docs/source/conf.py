@@ -13,7 +13,17 @@ author = 'Luc Tourangeau, Jeffrey Gill'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinxcontrib.video']
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.todo',
+    'sphinxcontrib.programoutput',
+    'sphinxcontrib.video',
+]
+
+autodoc_default_options = {
+    'members': True,
+    'private-members': True,  # include members starting with an underscore
+}
 
 templates_path = ['_templates']
 exclude_patterns = []

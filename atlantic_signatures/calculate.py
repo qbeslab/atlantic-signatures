@@ -1,12 +1,17 @@
 """
-
+The :mod:`atlantic_signatures.calculate` module implements ... TODO
 """
+
 from operator import itemgetter
 
 import numpy as np
 
 
 def normalize(v):
+    """
+    TODO
+    """
+
     norm = np.linalg.norm(v)
     if norm == 0:
         return v
@@ -14,11 +19,18 @@ def normalize(v):
 
 
 class Current:
+    """
+    TODO
+    """
 
     SECTION = 'Current Properties'
     PARAMS = ('s_x', 's_y', 'v_theta', 'theta_fluid', 'v_radial')
 
     def __init__(self, s_x, s_y, v_theta, theta_fluid, v_radial=0):
+        """
+        TODO
+        """
+
         self._s_x = s_x
         self._s_y = s_y
         self._v_theta = v_theta
@@ -28,6 +40,10 @@ class Current:
         self.calculate = np.vectorize(self._point_calculate, excluded=['self'])
 
     def _point_calculate(self, x, y):
+        """
+        TODO
+        """
+
         r = np.hypot(x, y) + 1e-4
 
         a = (self._s_x/r)*(self._v_radial*x - self._v_theta*y)
@@ -43,16 +59,27 @@ class Current:
 
     @classmethod
     def from_cache(cls, cache):
+        """
+        TODO
+        """
+
         values = itemgetter(*cls.PARAMS)(cache[cls.SECTION])
         return cls(**dict(zip(cls.PARAMS, values)))
 
     @staticmethod
     def remove_units(quantity):
+        """
+        TODO
+        """
+
         return quantity.magnitude if hasattr(quantity, 'magnitude') else quantity
 
 
 
 class Field:
+    """
+    TODO
+    """
 
     SECTION = 'Field Properties'
     REQ_PARAMS = ('a_inc', 'b_inc', 'c_inc', 'a_int', 'b_int', 'c_int', 'eta')
@@ -63,6 +90,10 @@ class Field:
                       delta_theta_inc=0, delta_theta_int=0)
 
     def __init__(self, a_inc, b_inc, c_inc, a_int, b_int, c_int, eta, **kwargs):
+        """
+        TODO
+        """
+
         self._a_inc = a_inc
         self._b_inc = b_inc
         self._c_inc = c_inc
@@ -122,6 +153,7 @@ class Field:
         """
         Calculate the (beta, gamma) magnetic signature at this (x, y) coordinate at time n.
         """
+
         d_beta  = sum(i*j for i, j in zip(self._beta_0, (self._a_inc, self._b_inc, self._c_inc)))
         d_gamma = sum(i*j for i, j in zip(self._gamma_0, (self._a_int, self._b_int, self._c_int)))
 
@@ -215,6 +247,10 @@ class Field:
 
     @classmethod
     def from_cache(cls, cache):
+        """
+        TODO
+        """
+
         values = itemgetter(*cls.REQ_PARAMS)(cache[cls.SECTION])
 
         kwargs = {i: j for i, j in cache[cls.SECTION].items() if i in cls.SPECIAL_PARAMS + tuple(cls.OPT_PARAMS)}
@@ -224,4 +260,8 @@ class Field:
 
     @staticmethod
     def remove_units(quantity):
+        """
+        TODO
+        """
+
         return quantity.magnitude if hasattr(quantity, 'magnitude') else quantity

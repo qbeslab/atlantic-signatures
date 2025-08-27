@@ -1,11 +1,7 @@
 """
-Python configuration file that contains all the data structures necessary to
-generate a plot or plots with the formatting of the paper:
-
- A bioinspired navigation strategy that uses magnetic signatures Q1 to navigate
- without GPS in a linearized northern Atlantic ocean: a simulation study
-
+The :mod:`atlantic_signatures.plotter.plot` module implements ... TODO
 """
+
 import os
 import sys
 
@@ -14,17 +10,16 @@ from matplotlib.patches   import Circle
 import matplotlib.pyplot as plt
 import numpy as np
 
-from atlantic_signatures.plotter import colors
-from atlantic_signatures.calculate import Current, Field
-from atlantic_signatures.config_loader import Loader, config_to_dict
-from atlantic_signatures.navigator import Navigator, FinalGoalReached
+from ..plotter import colors
+from ..config_loader import Loader, config_to_dict
+from ..navigator import Navigator, FinalGoalReached
 
 #plt.rcParams['animation.ffmpeg_path'] = os.path.join(os.expan)
 
 
 
-__all__ = ['beta_kwargs', 'gamma_kwargs',
-           'xboundary_kwargs', 'yboundary_kwargs']
+# __all__ = ['beta_kwargs', 'gamma_kwargs',
+#            'xboundary_kwargs', 'yboundary_kwargs']
 
 
 
@@ -143,7 +138,15 @@ class HiddenPrints:
 
 
 class Plot:
+    """
+    TODO
+    """
+
     def __init__(self, config_file, csv_file, **kwargs):
+        """
+        TODO
+        """
+
         self.cache = config_to_dict(Loader().read_config_file(config_file))
         a = np.loadtxt(csv_file, skiprows=1, delimiter=',', unpack=True)
         X, Y, THETA, TIME = a
@@ -201,6 +204,7 @@ class Plot:
         Return the number of points (fontsize) that scales the axis dimensions
         of the trajectory plot to the physical size of the plot.
         """
+
         xmin, xmax = self.ax.get_xlim()
 
         # scale is the number of pixels per base plot unit (typically meters)
@@ -231,18 +235,34 @@ class Plot:
         self.gamma_plot = self.ax.contour(X, Y, gamma, zorder=-1, **gamma_kwargs)
 
     def plot_data(self):
+        """
+        TODO
+        """
+
         # create a line plot for the trajectory
         x = self.X / 1000  # convert mm to m
         y = self.Y / 1000  # convert mm to m
         self.trajectory, = self.ax.plot(x, y, color='black', linewidth=2, solid_capstyle='round')
 
     def save(self, fname, *args, **kwargs):
+        """
+        TODO
+        """
+
         self.fig.savefig(fname, *args, **kwargs)
 
 
 
 class AnimatedPlot(Plot):
+    """
+    TODO
+    """
+
     def __init__(self, config_file, csv_file, **kwargs):
+        """
+        TODO
+        """
+
         self.n = kwargs.pop('n', 5)
         self.t_multi = kwargs.pop('t_multi', 1)
         self.robot_radius = 0.17  # iRobot Create2 is 34 cm in diameter
@@ -254,6 +274,10 @@ class AnimatedPlot(Plot):
             self.active_magnetic_signature_paths[i] = []
 
     def plot_data(self):
+        """
+        TODO
+        """
+
         # create an empty transparent line plot for all past circuits (data to be updated later)
         self.trajectory_previous_circuits, = self.ax.plot([], [], color='black', linewidth=2, solid_capstyle='round', alpha=0.4)
 
@@ -296,6 +320,10 @@ class AnimatedPlot(Plot):
         self.anim = FuncAnimation(self.fig, self.update_animation, frames=frames)
 
     def update_animation(self, i):
+        """
+        TODO
+        """
+
         t = self.T[i]
         x = self.X[i] / 1000  # convert mm to m
         y = self.Y[i] / 1000  # convert mm to m
@@ -399,6 +427,10 @@ class AnimatedPlot(Plot):
             self.ax.set_title(f'Circuit {self.navigator._current_circuit_number} of {self.navigator._circuits}')
 
     def save(self, fname, *args, **kwargs):
+        """
+        TODO
+        """
+
         self.anim.save(fname, *args, **kwargs)
 
 

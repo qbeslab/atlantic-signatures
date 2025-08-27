@@ -1,6 +1,7 @@
 """
-
+The :mod:`atlantic_signatures.simulation` module implements ... TODO
 """
+
 import json
 from math import acos, atan2, copysign, cos, sin, sqrt
 import os
@@ -15,7 +16,15 @@ SIMS_DIR = os.path.join(os.getcwd(), 'simulations')
 
 
 class Simulation:
+    """
+    TODO
+    """
+
     def __init__(self, x0, y0, theta0=0.0, config_file=None):
+        """
+        TODO
+        """
+
         self.x0 = x0
         self.y0 = y0
         self.theta0 = theta0
@@ -45,6 +54,10 @@ class Simulation:
         self.start()
 
     def __repr__(self):
+        """
+        TODO
+        """
+
         return f'{self.__class__.__name__}(x0={self.x0}, y0={self.y0}, theta0={self.theta0}, config_file={self._config_file})'
 
     ############################################################################
@@ -52,11 +65,19 @@ class Simulation:
     ############################################################################
 
     def start(self):
+        """
+        TODO
+        """
+
         self.send_config(self._config_file)
         self.t0 = time.time()
         self.send_loop()
 
     def send_loop(self):
+        """
+        TODO
+        """
+
         try:
             while True:
                 # r, w, _ = select.select([self._client_sock], [self._client_sock], [])
@@ -85,6 +106,10 @@ class Simulation:
             print('Socket has been closed')
 
     def send_data(self, *, level=0):
+        """
+        TODO
+        """
+
         if level > 9:
             print(
                 'The Create has been occluded for the past 10 frames and is '
@@ -120,6 +145,10 @@ class Simulation:
             raise
 
     def send_config(self, config_file):
+        """
+        TODO
+        """
+
         config = config_to_dict(Loader().read_config_file(config_file))
         print("Sending config file: %s with the following parameters:" % config_file)
         for section, params in config.items():
@@ -141,6 +170,10 @@ class Simulation:
     ############################################################################
 
     def recv_config(self, payload):
+        """
+        TODO
+        """
+
         if not self._config:
             self._config = json.loads(payload)
 
@@ -170,6 +203,7 @@ class Simulation:
         represents the number of radians between the Create's Y-axis and the
         global X-axis.
         """
+
         data = json.loads(payload)
         print("x: {x:+8.02f},    y: {y:+8.02f},    theta: {theta:+5.02f}".format(**data))
         self._pose.update(data)
@@ -178,6 +212,10 @@ class Simulation:
             self.move_to_next_point(**self._pose)
 
     def move_to_next_point(self, x, y, theta):
+        """
+        TODO
+        """
+
         try:
             # self._navigator.check_reached_goal(x, y)
             if self._navigator.check_reached_goal(x, y): time.sleep(0.3)  # ADDED FOR SIMULATION
@@ -231,10 +269,18 @@ class Simulation:
     ############################################################################
 
     def simulate_turn(self, angle):
+        """
+        TODO
+        """
+
         self._new_pose = self._pose
         self._new_pose['theta'] = (self._new_pose['theta'] + angle + np.pi) % (2*np.pi) - np.pi
 
     def simulate_straight(self, distance):
+        """
+        TODO
+        """
+
         self._new_pose = self._pose
         self._new_pose['x'] += distance * cos(self._pose['theta'])
         self._new_pose['y'] += distance * sin(self._pose['theta'])

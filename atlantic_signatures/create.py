@@ -1,12 +1,5 @@
 """
-
-Limited API for controlling the iRobot Create2
-==============================================
-
-Only the subset of commands related to driving and vital functionality are
-implemented.
-
-
+The :mod:`atlantic_signatures.create` module implements ... TODO
 """
 
 from enum import IntEnum
@@ -19,6 +12,10 @@ from serial.tools.list_ports import comports
 
 
 class OPCODES(IntEnum):
+    """
+    TODO
+    """
+
     START        = 0x80
     RESET        = 0x07
     STOP         = 0xad
@@ -47,6 +44,9 @@ def find_port():
 class Create:
     """
     Create movement and base functionality commands
+
+    Limited API for controlling the iRobot Create2. Only the subset of commands
+    related to driving and vital functionality are implemented.
     """
 
     _SPECIAL_TURN_RADII = {
@@ -67,31 +67,63 @@ class Create:
     _WHEEL_DIAMETER = 72.0  # The Create's wheels have a diameter of 72 mm
 
     def __init__(self, port=None):
+        """
+        TODO
+        """
+
         if port is None:
             port = find_port()
         self._serial = serial.Serial(port=port, baudrate=115200)
         self._serial_startup()
 
     def _serial_send(self, fmt, *v):
+        """
+        TODO
+        """
+
         self._serial.write(struct.pack(fmt, *v))
         time.sleep(self._COMMAND_DELAY)
 
     def _start(self):
+        """
+        TODO
+        """
+
         self._serial_send('B', OPCODES.START)
 
     def _reset(self):
+        """
+        TODO
+        """
+
         self._serial_send('B', OPCODES.RESET)
 
     def _stop(self):
+        """
+        TODO
+        """
+
         self._serial_send('B', OPCODES.STOP)
 
     def _safe(self):
+        """
+        TODO
+        """
+
         self._serial_send('B', OPCODES.SAFE)
 
     def _full(self):
+        """
+        TODO
+        """
+
         self._serial_send('B', OPCODES.FULL)
 
     def _drive(self, v, r='straight'):
+        """
+        TODO
+        """
+
         if r in self._SPECIAL_TURN_RADII:
             r = self._SPECIAL_TURN_RADII[r]
         else:
@@ -102,6 +134,10 @@ class Create:
         self._is_driving = v > self._MIN_MOVING_SPEED
 
     def _drive_direct(self, vl, vr):
+        """
+        TODO
+        """
+
         vl, vr = self._bound(vl, 0, 500), self._bound(vr, 0, 500)
 
         self._serial_send('>B2h', OPCODES.DRIVE_DIRECT, vr, vl)
@@ -109,6 +145,10 @@ class Create:
                             abs(vr - vl) > self._MIN_MOVING_SPEED)
 
     def _serial_startup(self, mode='full'):
+        """
+        TODO
+        """
+
         if not self._serial.is_open:
             self._serial.open()
 
@@ -117,14 +157,26 @@ class Create:
         time.sleep(2)
 
     def close(self):
+        """
+        TODO
+        """
+
         self._stop()  # needed to exit full mode and allow charging after use
         self._serial.close()
 
     @staticmethod
     def _bound(q, minq, maxq):
+        """
+        TODO
+        """
+
         qsgn = -1 if q < 0 else 1
         return qsgn * min(max(minq, abs(round(q))), maxq)
 
     @property
     def is_driving(self):
+        """
+        TODO
+        """
+
         return self._is_driving

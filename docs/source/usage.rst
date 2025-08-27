@@ -2,6 +2,8 @@
 Usage
 ============
 
+.. program-output:: atlantic_signatures --help
+
 Note that in these instructions, generally, "Host" refers to the lab desktop
 computer, and "Client" refers to the Raspberry Pi in use. One exception is
 immediately below, in an SSH config file, where in SSH terminology the remote

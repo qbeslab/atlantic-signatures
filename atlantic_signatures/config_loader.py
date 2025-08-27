@@ -1,7 +1,6 @@
 """
-Loads config files for plotting and serialization methods
+The :mod:`atlantic_signatures.config_loader` module implements ... TODO
 """
-
 
 from configparser import _UNSET, ConfigParser, NoOptionError, NoSectionError
 import json
@@ -15,6 +14,9 @@ class InvalidConfigFormatError(Exception):
 
 
 class QuantityConfigParser(ConfigParser):
+    """
+    TODO
+    """
 
     _UNIT_RE   = re.compile(r"\([a-zA-Z0-9_\^\/]+\){0,1}")
     _NUMBER_RE = re.compile(r"(-{0,1}\d+)(\.\d*)?")
@@ -124,10 +126,17 @@ CONFIG_OPTIONS = {
 
 
 class Loader:
+    """
+    Loads config files for plotting and serialization methods
+    """
 
     _VAR_RE = re.compile(r"(?P<var>\w+)\s*\((?P<unit>[a-zA-Z0-9_\^\/]+)\)")
 
     def __init__(self, *args, **kwargs):
+        """
+        TODO
+        """
+
         self._DELIM  = kwargs.get('delimiter', ',')
         self._SEP_RE = re.compile(r"\s*%s\s*" % self._DELIM)
 
@@ -169,6 +178,7 @@ class Loader:
         instance and return that instance. How each section/option is read is
         left up to the caller.
         """
+
         config = QuantityConfigParser(allow_no_value=True)
         config.read(file)
         return config
@@ -176,6 +186,10 @@ class Loader:
 
 
 def config_to_dict(parser_object):
+    """
+    TODO
+    """
+
 
     id_map = {
         '<int>': parser_object.getint,
@@ -211,4 +225,8 @@ def config_to_dict(parser_object):
 
 
 def config_to_json(parser_object):
+    """
+    TODO
+    """
+
     return json.dumps(config_to_dict(parser_object))

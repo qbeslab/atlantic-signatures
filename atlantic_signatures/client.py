@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 """
-Created on Wed Jun 23 10:18:48 2021
+The :mod:`atlantic_signatures.client` module implements ... TODO
+"""
 
-@author: lucsc
-"""
 from __future__ import absolute_import
 
 import json
@@ -18,8 +16,15 @@ from atlantic_signatures.socket_protocol import *
 
 
 class Client(Protocol):
+    """
+    TODO
+    """
 
     def __init__(self, host, **kwargs):
+        """
+        TODO
+        """
+
         self._pose = {'x': None, 'y': None, 'theta': None}
         self._host = host
         self._starting_mode = kwargs.get('starting_mode', 'full')
@@ -56,6 +61,10 @@ class Client(Protocol):
         self.start()
 
     def start(self):
+        """
+        TODO
+        """
+
         try:
             while True:
                 self.read_loop()
@@ -81,6 +90,10 @@ class Client(Protocol):
             print('Serial connection has been closed')
 
     def read_loop(self):
+        """
+        TODO
+        """
+
         pb, payload = self._recv()
 
         if pb == PACKETS.COMMAND:
@@ -97,6 +110,10 @@ class Client(Protocol):
             raise OSError("An invalid packet was received: {}".format(pb))
 
     def recv_command(self, payload):
+        """
+        TODO
+        """
+
         command = json.loads(payload, encoding='utf-8')
         if command['opcode'] == OPCODES.DRIVE:
             self._create._drive(v=command.get('v', self._default_v), r=command.get('r', 'straight'))
@@ -105,6 +122,10 @@ class Client(Protocol):
         self._client_sock.send(bytes(PACKETS.ACKCOMMAND))
 
     def recv_config(self, payload):
+        """
+        TODO
+        """
+
         if not self._config:
             self._config = json.loads(payload)
 
@@ -136,6 +157,7 @@ class Client(Protocol):
         represents the number of radians between the Create's Y-axis and the
         global X-axis.
         """
+
         data = json.loads(payload)
         print("x: {x:+8.02f},    y: {y:+8.02f},    theta: {theta:+5.02f}".format(**data))
         self._pose.update(data)
@@ -144,6 +166,10 @@ class Client(Protocol):
             self.move_to_next_point(**self._pose)
 
     def move_to_next_point(self, x, y, theta):
+        """
+        TODO
+        """
+
         try:
             self._navigator.check_reached_goal(x, y)
         except FinalGoalReached:
@@ -192,6 +218,7 @@ class Client(Protocol):
         The Create is started up after calling this command. It can only be
         called once.
         """
+
         if not (self._started and self._config):
             self._create._serial_startup(mode=self._starting_mode)
             self._started = True
@@ -199,6 +226,10 @@ class Client(Protocol):
 
     @property
     def pose(self):
+        """
+        TODO
+        """
+
         return self._position
 
 

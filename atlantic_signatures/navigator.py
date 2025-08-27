@@ -1,6 +1,8 @@
 """
-
+The :mod:`atlantic_signatures.navigator` module implements a class responsible
+for making navigation decisions.
 """
+
 from collections import deque
 import numpy as np
 
@@ -8,10 +10,22 @@ from atlantic_signatures.calculate import Current, Field, normalize
 
 
 class FinalGoalReached(Exception):
+    """
+    TODO
+    """
+
     pass
 
 class Navigator:
+    """
+    TODO
+    """
+
     def __init__(self, linear_velocity, goals, r_goal, r_multi, multimodal_method, secular_variation_strategy, circuits, field, current):
+        """
+        Initialize a new Navigator
+        """
+
         self._linear_velocity = linear_velocity
         self._goals = deque(goals.values())
         self._goal_count = len(goals)
@@ -38,10 +52,17 @@ class Navigator:
 
     @property
     def current_goal_number(self):
-        '''The current goal number (1-indexed)'''
+        """
+        The current goal number (1-indexed)
+        """
+
         return 1 + (self._current_goal_number-1) % self._goal_count
 
     def check_reached_goal(self, x, y):
+        """
+        TODO
+        """
+
         d_goal = np.linalg.norm([self._x_goal - x, self._y_goal - y])
 
         if d_goal <= self._r_goal:
@@ -98,6 +119,10 @@ class Navigator:
         self._magnetic_signatures.append((self._beta_goal, self._gamma_goal))  # add the goal's magnetic signature to the back of the queue
 
     def _point_net_velocity(self, x, y):
+        """
+        TODO
+        """
+
         x_diff, y_diff = self._x_goal - x, self._y_goal - y
         d_goal = np.linalg.norm([x_diff, y_diff])
 
@@ -159,6 +184,10 @@ class Navigator:
 
     @classmethod
     def from_cache(cls, cache):
+        """
+        TODO
+        """
+
         goals = cache['Goal Properties'].copy()
         circuits = goals.pop('circuits', 1)  # default circuits given here
         return cls(

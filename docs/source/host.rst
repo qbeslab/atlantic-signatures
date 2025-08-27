@@ -26,8 +26,7 @@ amongst other directories. From this directory enter:
 
 .. code-block:: batch
 
-    pip install -r requirements.txt
-    python setup.py install
+    pip install -e .[plot,docs]
 
 The host computer is now setup! Everytime you wish to run tests, you will do
 so from the anaconda prompt.

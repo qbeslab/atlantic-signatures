@@ -37,9 +37,7 @@ class Current:
         self._theta_fluid = theta_fluid
         self._v_radial = v_radial
 
-        self.calculate = np.vectorize(self._point_calculate, excluded=['self'])
-
-    def _point_calculate(self, x, y):
+    def calculate(self, x, y):
         """
         TODO
         """
@@ -146,10 +144,7 @@ class Field:
         self._delta_theta_inc = kwargs.get('delta_theta_inc', self.OPT_PARAMS['delta_theta_inc'])
         self._delta_theta_int = kwargs.get('delta_theta_int', self.OPT_PARAMS['delta_theta_int'])
 
-        self.calculate = np.vectorize(self._point_calculate, excluded=['self'])
-        self.inverse = np.vectorize(self._point_inverse, excluded=['self'])
-
-    def _point_calculate(self, x, y, n):
+    def calculate(self, x, y, n):
         """
         Calculate the (beta, gamma) magnetic signature at this (x, y) coordinate at time n.
         """
@@ -168,7 +163,7 @@ class Field:
 
         return beta, gamma
 
-    def _point_inverse(self, beta, gamma, n):
+    def inverse(self, beta, gamma, n):
         """
         Find the (x, y) coordinate that give this (beta, gamma) magnetic signature at time n.
 

@@ -16,6 +16,7 @@ author = 'Luc Tourangeau, Jeffrey Gill'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.todo',
+    'sphinx.ext.viewcode',
     'sphinxcontrib.programoutput',
     'sphinxcontrib.video',
 ]

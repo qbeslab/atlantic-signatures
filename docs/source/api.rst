@@ -14,3 +14,4 @@ API Reference Guide
     api/plot
     api/simulation
     api/socket_protocol
+    api/units

@@ -21,3 +21,4 @@ Table of Contents
    usage
    docs
    api
+   todo

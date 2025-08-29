@@ -30,3 +30,7 @@ amongst other directories. From this directory enter:
 
 The host computer is now setup! Everytime you wish to run tests, you will do
 so from the anaconda prompt.
+
+.. todo::
+
+    Update the host setup instructions.

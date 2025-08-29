@@ -80,6 +80,8 @@ object name like 'Create2' or 'Create2-1'.
     |   :align: left                                     |   :align: center                                     |   :align: right                                      |
     +----------------------------------------------------+------------------------------------------------------+------------------------------------------------------+
 
+.. _calibration:
+
 -----------------------
 Calibration Walkthrough
 -----------------------
@@ -259,3 +261,7 @@ One would think that masking should help with this, but it is conceivable that
 masking happens at the desktop after the camera hardware has done point
 discrimination, in which case masking would not help with this visual noise
 "overload" problem -- but again these are Jeff's wild speculations!
+
+.. todo::
+
+    Separate background and calibration into distinct pages.

@@ -26,6 +26,8 @@ autodoc_default_options = {
     'private-members': True,  # include members starting with an underscore
 }
 
+todo_include_todos = True
+
 templates_path = ['_templates']
 exclude_patterns = []
 

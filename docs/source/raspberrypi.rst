@@ -23,12 +23,13 @@ Goals of this Guide
 Materials
 ---------
 
-.. image:: images/materials.jpg
+.. figure:: images/materials.jpg
+  :height: 400
 
-| **A.** The Raspberry Pi (inside protective case)
-| **B.** An SD card reader with USB attachment
-| **C.** Micro SD card and adapter
-| **D.** Power source
+  **A.** The Raspberry Pi (inside protective case)
+  **B.** An SD card reader with USB attachment
+  **C.** Micro SD card and adapter
+  **D.** Power source
 
 Raspberry Pi
 ============
@@ -60,7 +61,8 @@ The only other item required besides the Create itself is the Create serial
 communications cable. Through this cable all commands are sent as well as all
 sensor data is received.
 
-.. image:: images/raspberrypi/serial_comms_cable.png
+.. figure:: images/raspberrypi/serial_comms_cable.png
+  :height: 200
 
 -------------------------------
 Installing the Operating System
@@ -281,3 +283,7 @@ Successful output of running the setup script:
 
 
 You are now ready to run a test!
+
+.. todo::
+
+  Update the Raspberry Pi setup instructions.

@@ -265,3 +265,7 @@ discrimination, in which case masking would not help with this visual noise
 .. todo::
 
     Separate background and calibration into distinct pages.
+
+.. todo::
+
+    Add camera focus instructions.

@@ -24,7 +24,7 @@ Materials
 ---------
 
 .. figure:: images/materials.jpg
-  :height: 400
+  :width: 600
 
   **A.** The Raspberry Pi (inside protective case)
   **B.** An SD card reader with USB attachment
@@ -62,7 +62,7 @@ communications cable. Through this cable all commands are sent as well as all
 sensor data is received.
 
 .. figure:: images/raspberrypi/serial_comms_cable.png
-  :height: 200
+  :width: 600
 
 -------------------------------
 Installing the Operating System
@@ -161,10 +161,12 @@ config.txt. This file contains various parameters loaded at boot time and serves
 as the Raspberry Pi's BIOS.
 
 .. figure:: images/raspberrypi/config-file-search.png
+    :width: 600
 
     The config.txt file
 
 .. figure:: images/raspberrypi/config-undo-force-hotplug.png
+    :width: 600
 
     Navigate to the commented out line: hdmi_force_hotplug=1 and uncomment it
     like in this figure.
@@ -184,19 +186,22 @@ You should find a velcro section on the Create's underbelly this is where the
 Pi's power source will be connected. To access this part and place the power
 source, remove the cargo bay from the Create like so:
 
-.. image:: images/raspberrypi/Create-pic-1.png
+.. figure:: images/raspberrypi/Create-pic-1.png
+    :width: 600
 
 Attach the power source to the velcro section and you should end up with the
 following configuration. The power cable will be a snug fit.
 
-.. image:: images/raspberrypi/Create-pic-2.jpg
+.. figure:: images/raspberrypi/Create-pic-2.jpg
+    :width: 600
 
 Flip the Create so it is back on its wheels. Reconnect the cargo bay and
 thread the power cable through the hole on its top. You may now place the
 raspberry pi to the velcro at the back of the Create like so. Note this
 image is flipped and the text on the pi's case should be facing away from you.
 
-.. image:: images/raspberrypi/Create-pic-3.jpg
+.. figure:: images/raspberrypi/Create-pic-3.jpg
+    :width: 600
 
 Connect the Create's serial communications cable to the Create and one of the
 USB ports found on the Raspberry Pi. Lastly, connect the power cable to the
@@ -206,7 +211,8 @@ we press the power button found on the power source. Once the power button is
 pressed a red light inside the Pi will indicate it is receiving power while a green light
 is flickering indicating it is booting.
 
-.. image:: images/raspberrypi/Create-pic-4.jpg
+.. figure:: images/raspberrypi/Create-pic-4.jpg
+    :width: 600
 
 Step 5: First Boot
 ==================
@@ -232,12 +238,14 @@ NOTE: If you have used this particular Raspberry Pi before and it has since had
 its operating system reinstalled then you may receive a scary message about hackers
 and you will be denied from connecting to the Pi. An example message:
 
-.. image:: images/raspberrypi/scp-warning-msg.png
+.. figure:: images/raspberrypi/scp-warning-msg.png
+    :width: 600
 
 If you receive this message, you will have to modify the .ssh file that is mentioned.
 I simply delete the file when this occurs:
 
-.. image:: images/raspberrypi/delete-ssh-file.png
+.. figure:: images/raspberrypi/delete-ssh-file.png
+    :width: 600
 
 Step 7: SSH Into the Raspberry Pi
 =================================
@@ -250,7 +258,8 @@ during setup.
 
 Ensure we are connected to the lab wifi network on the host computer:
 
-.. image:: images/raspberrypi/ensure-wifi-network.png
+.. figure:: images/raspberrypi/ensure-wifi-network.png
+    :width: 400
 
 Load up a command prompt on the host and enter the following:
 
@@ -279,7 +288,8 @@ directory all you have to do is run the following:
 
 Successful output of running the setup script:
 
-.. image:: images/raspberrypi/setup-script-output.png
+.. figure:: images/raspberrypi/setup-script-output.png
+    :width: 600
 
 
 You are now ready to run a test!

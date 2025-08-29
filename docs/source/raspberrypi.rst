@@ -62,7 +62,7 @@ communications cable. Through this cable all commands are sent as well as all
 sensor data is received.
 
 .. figure:: images/raspberrypi/serial_comms_cable.png
-  :width: 600
+  :width: 400
 
 -------------------------------
 Installing the Operating System

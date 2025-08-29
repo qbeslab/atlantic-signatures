@@ -230,3 +230,7 @@ Teardown
 .. todo::
 
     Section on how to make code changes and deploy them.
+
+.. todo::
+
+   How to push commits to GitHub (GH authentication)

@@ -22,9 +22,7 @@ class Navigator:
     """
 
     def __init__(self, linear_velocity, goals, r_goal, r_multi, multimodal_method, secular_variation_strategy, circuits, field, current):
-        """
-        Initialize a new Navigator
-        """
+        """Initialize a new Navigator."""
 
         self._linear_velocity = linear_velocity
         self._goals = deque(goals.values())

@@ -33,9 +33,7 @@ class Host(Protocol):
     """
 
     def __init__(self, config_file=None, objectname=None, host=None, timeout=30):
-        """
-        TODO
-        """
+        """Initializer for a new Host."""
 
         if config_file is None:
             raise RuntimeError('No config file was provided')

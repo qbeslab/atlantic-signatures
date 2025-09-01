@@ -94,6 +94,9 @@ class Current:
         """Instantiate a new Current from a config dictionary.
 
         Example usage:
+            >>> import importlib.resources
+            >>> config_file = importlib.resources.files('atlantic_signatures').joinpath('demo.cfg')
+            >>>
             >>> from atlantic_signatures.calculate import Current
             >>> from atlantic_signatures.config_loader import Loader, config_to_dict
             >>> current = Current.from_cache(config_to_dict(Loader().read_config_file(config_file)))
@@ -197,9 +200,7 @@ class Field:
                       delta_theta_inc=0, delta_theta_int=0)
 
     def __init__(self, a_inc, b_inc, c_inc, a_int, b_int, c_int, eta, **kwargs):
-        """
-        Initializer for a new Field.
-        """
+        """Initializer for a new Field."""
 
         self._a_inc = a_inc
         self._b_inc = b_inc
@@ -389,6 +390,9 @@ class Field:
         """Instantiate a new Field from a config dictionary.
 
         Example usage:
+            >>> import importlib.resources
+            >>> config_file = importlib.resources.files('atlantic_signatures').joinpath('demo.cfg')
+            >>>
             >>> from atlantic_signatures.calculate import Field
             >>> from atlantic_signatures.config_loader import Loader, config_to_dict
             >>> field = Field.from_cache(config_to_dict(Loader().read_config_file(config_file)))

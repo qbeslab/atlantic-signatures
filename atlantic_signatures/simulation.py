@@ -21,9 +21,7 @@ class Simulation:
     """
 
     def __init__(self, x0, y0, theta0=0.0, config_file=None):
-        """
-        TODO
-        """
+        """Initializer for a new Simulation."""
 
         self.x0 = x0
         self.y0 = y0

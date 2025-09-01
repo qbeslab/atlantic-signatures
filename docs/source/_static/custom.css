@@ -1,4 +1,13 @@
 div.admonition-todo {
+    /* stylize todo warning boxes */
     border: 2px solid #ff7f36;
     background-color: #ffeae0;
+}
+
+section > dl.py {
+    /* add space and dividers between top-level module entries in API docs */
+    border-top: 3px solid #EEE;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    margin-bottom: 0;
 }

@@ -1,5 +1,11 @@
 """
-The :mod:`atlantic_signatures.config_loader` module implements ... TODO
+The :mod:`atlantic_signatures.config_loader` module implements the following:
+
+- Class :class:`QuantityConfigParser` for parsing configuration parameters that
+  have units
+- Class :class:`Loader` for reading configuration files
+- Functions :func:`config_to_dict` and :func:`config_to_json` for converting
+  :class:`QuantityConfigParser` objects to other formats
 """
 
 from configparser import _UNSET, ConfigParser, NoOptionError, NoSectionError
@@ -14,8 +20,20 @@ class InvalidConfigFormatError(Exception):
 
 
 class QuantityConfigParser(ConfigParser):
-    """
-    TODO
+    """A config parser class designed to work with Pint Quantity objects.
+
+    This class extends the :class:`ConfigParser <configparser.ConfigParser>`
+    class from the Python standard library, adding a :meth:`getquantity` method
+    for parsing :class:`pint.Quantity` objects from config files.
+
+    Example usage:
+        >>> import importlib.resources
+        >>> config_file = importlib.resources.files('atlantic_signatures').joinpath('demo.cfg')
+        >>>
+        >>> from atlantic_signatures.config_loader import QuantityConfigParser
+        >>> config = QuantityConfigParser()
+        >>> config.read(config_file)
+        >>> config.getquantity('Current Properties', 'v_theta')
     """
 
     _UNIT_RE   = re.compile(r"\([a-zA-Z0-9_\^\/]+\){0,1}")
@@ -24,8 +42,8 @@ class QuantityConfigParser(ConfigParser):
     def getquantity(self, section, option, *, raw=False, vars=None, fallback=_UNSET,
                     units=_UNSET, size=_UNSET):
         """
-        Return a pint.Quantity (a number/number array bound to a unit) from a
-        given section-option pair.
+        Return a :class:`pint.Quantity` (a number/number array bound to a unit)
+        from a given section-option pair.
         """
 
         try:
@@ -126,16 +144,20 @@ CONFIG_OPTIONS = {
 
 
 class Loader:
-    """
-    Loads config files for plotting and serialization methods
+    """A class for loading config files for plotting and serialization methods.
+
+    Example usage:
+        >>> import importlib.resources
+        >>> config_file = importlib.resources.files('atlantic_signatures').joinpath('demo.cfg')
+        >>>
+        >>> from atlantic_signatures.config_loader import Loader
+        >>> config = Loader().read_config_file(config_file)
     """
 
     _VAR_RE = re.compile(r"(?P<var>\w+)\s*\((?P<unit>[a-zA-Z0-9_\^\/]+)\)")
 
     def __init__(self, *args, **kwargs):
-        """
-        TODO
-        """
+        """Initializer for a new Loader."""
 
         self._DELIM  = kwargs.get('delimiter', ',')
         self._SEP_RE = re.compile(r"\s*%s\s*" % self._DELIM)
@@ -144,6 +166,8 @@ class Loader:
         """
         Given an opened data file object *file* this function will return a
         numpy array of the data inside that file.
+
+        As of August 2025, this method is unused.
         """
 
         import numpy as np
@@ -173,11 +197,7 @@ class Loader:
         return var_dict, data
 
     def read_config_file(self, file):
-        """
-        Load a given config file into a TrajectoryParser (special configparser)
-        instance and return that instance. How each section/option is read is
-        left up to the caller.
-        """
+        """Load a config file into a :class:`QuantityConfigParser`."""
 
         config = QuantityConfigParser(allow_no_value=True)
         config.read(file)
@@ -186,10 +206,7 @@ class Loader:
 
 
 def config_to_dict(parser_object):
-    """
-    TODO
-    """
-
+    """Convert a :class:`QuantityConfigParser` into a dictionary."""
 
     id_map = {
         '<int>': parser_object.getint,
@@ -225,8 +242,6 @@ def config_to_dict(parser_object):
 
 
 def config_to_json(parser_object):
-    """
-    TODO
-    """
+    """Convert a :class:`QuantityConfigParser` into a JSON string."""
 
     return json.dumps(config_to_dict(parser_object))

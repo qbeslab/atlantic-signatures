@@ -15,17 +15,26 @@ author = 'Luc Tourangeau, Jeffrey Gill'
 
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
     'sphinxcontrib.programoutput',
     'sphinxcontrib.video',
 ]
 
+# https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#confval-autodoc_default_options
 autodoc_default_options = {
     'members': True,
     'private-members': True,  # include members starting with an underscore
 }
 
+# https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html#confval-intersphinx_mapping
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'pint':   ('https://pint.readthedocs.io/en/stable', None),
+}
+
+# https://www.sphinx-doc.org/en/master/usage/extensions/todo.html#confval-todo_include_todos
 todo_include_todos = True
 
 templates_path = ['_templates']

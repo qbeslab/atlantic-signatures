@@ -25,6 +25,6 @@ __all__ = ['ureg']
 _unitfile = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'units.txt')
 
 if os.path.isfile(_unitfile):
-    ureg = _UnitRegistry(_unitfile)  #: an instance of pint.UnitRegistry defined by units.txt
+    ureg = _UnitRegistry(_unitfile)  #: an instance of :class:`pint.UnitRegistry` defined by units.txt
 else:
     ureg = _UnitRegistry()

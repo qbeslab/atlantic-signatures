@@ -1,5 +1,6 @@
 """
-The :mod:`atlantic_signatures.client` module implements ... TODO
+The :mod:`atlantic_signatures.client` module implements a class for the client
+Raspberry Pi controlling the iRobot Create2.
 """
 
 from __future__ import absolute_import
@@ -21,9 +22,7 @@ class Client(Protocol):
     """
 
     def __init__(self, host, **kwargs):
-        """
-        TODO
-        """
+        """Initializer for a new Client."""
 
         self._pose = {'x': None, 'y': None, 'theta': None}
         self._host = host

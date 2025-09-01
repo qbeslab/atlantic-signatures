@@ -67,9 +67,7 @@ class Create:
     _WHEEL_DIAMETER = 72.0  # The Create's wheels have a diameter of 72 mm
 
     def __init__(self, port=None):
-        """
-        TODO
-        """
+        """Initializer for a new Create."""
 
         if port is None:
             port = find_port()

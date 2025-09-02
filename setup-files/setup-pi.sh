@@ -27,3 +27,16 @@ echo Successfully copied system pyserial to the virtual environment
 pip install $BASEDIR/setup-files/Pint*.whl --no-deps
 
 pip install -e $BASEDIR -U --no-deps --no-index
+
+# Add a command to ~/.profile that automatically actives the virtual environment
+PROFILE_FILE="$HOME/.profile"
+if ! grep -q "atlantic-signatures" "$PROFILE_FILE"; then
+    echo "Adding automatic environment activation to $PROFILE_FILE"
+    echo "" >> "$PROFILE_FILE"
+    echo "# activate the atlantic-signatures python virtual environment" >> "$PROFILE_FILE"
+    echo "if [ -d \"$VENVDIR/bin\" ]; then" >> "$PROFILE_FILE"
+    echo "    . \"$VENVDIR/bin/activate\"" >> "$PROFILE_FILE"
+    echo "fi" >> "$PROFILE_FILE"
+else
+    echo "Automatic environment activation already found in $PROFILE_FILE"
+fi

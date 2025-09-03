@@ -60,7 +60,7 @@ The only other item required besides the Create itself is the Create serial
 communications cable. Through this cable all commands are sent as well as all
 sensor data is received.
 
-.. figure:: images/raspberrypi/serial_comms_cable.png
+.. figure:: images/serial_comms_cable.png
   :width: 400
 
 -----------------------------------------------
@@ -87,7 +87,7 @@ Here is a video demonstration of the below steps.
 
     The video does not show one useful step, highlighted in a warning below!
 
-.. video:: videos/raspberry-pi/install_os.mp4
+.. video:: videos/install_os.mp4
     :width: 720
     :height: 480
 

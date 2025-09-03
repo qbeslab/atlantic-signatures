@@ -32,13 +32,13 @@ You should find a velcro section on the Create's underbelly. This is where the
 Pi's power source will be connected. To access this part and place the power
 source, remove the cargo bay from the Create like so:
 
-.. figure:: images/raspberrypi/Create-pic-1.png
+.. figure:: images/Create-pic-1.png
     :width: 600
 
 Attach the power source to the velcro section and you should end up with the
 following configuration. The power cable will be a snug fit.
 
-.. figure:: images/raspberrypi/Create-pic-2.jpg
+.. figure:: images/Create-pic-2.jpg
     :width: 600
 
 Flip the Create so it is back on its wheels. Reconnect the cargo bay and
@@ -52,7 +52,7 @@ source. Once the power button is pressed, a red light *inside* the Pi will
 indicate it is receiving power, and a green light flickering will indicate it is
 booting.
 
-.. figure:: images/raspberrypi/Create-pic-4.jpg
+.. figure:: images/Create-pic-3.jpg
     :width: 600
 
 

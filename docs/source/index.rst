@@ -20,5 +20,6 @@ Table of Contents
    test
    usage
    docs
+   cli
    api
    todo

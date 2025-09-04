@@ -14,7 +14,10 @@ Table of Contents
 .. toctree::
    :maxdepth: 3
 
-   vicon
+   vicon-intro
+   vicon-cameras
+   vicon-calibration
+   vicon-objects
    raspberrypi
    host
    test

@@ -2,6 +2,10 @@
 Everyday Usage
 ==============
 
+.. todo:: Section on how to make code changes and deploy them.
+
+.. todo:: How to push commits to GitHub (GH authentication)
+
 Note that in these instructions, "Host" refers to the lab desktop computer, and
 "Client" refers to the Raspberry Pi in use.
 
@@ -23,6 +27,8 @@ Setup
 
 
 **Connecting the Raspberry Pi to the Create**
+
+.. todo:: Assimilate this section with the rest, or remove if obsolete.
 
 First flip the Create upside down. One of the Creates has platform screws that
 will protect the markers attached to it while the Create is upside down. The
@@ -62,7 +68,7 @@ Lab Computer
 
 #. Manually connect the computer to the lab's wifi (SBG6900AC-B8296).
 #. Open Vicon Tracker (green icon).
-#. :ref:`Calibrate the cameras <calibration>`.
+#. :ref:`Calibrate the cameras <vicon-calibration>`.
 #. In Vicon Tracker's OBJECTS tab, select the Roomba in use and deselect all
    other objects.
 #. In Vicon Tracker, change the 3D view to "3D ORTHOGONAL", and optionally zoom
@@ -165,20 +171,3 @@ Teardown
 #. Remove the battery pack and put it on a USB charger.
 #. Return the Pi and serial data cable to storage.
 #. Return the Roomba to its docking station.
-
-
-.. todo::
-
-    Make Raspberry Pi and wifi passwords available somewhere secure.
-
-.. todo::
-
-    How-to on making Vicon objects, and backups of them.
-
-.. todo::
-
-    Section on how to make code changes and deploy them.
-
-.. todo::
-
-   How to push commits to GitHub (GH authentication)

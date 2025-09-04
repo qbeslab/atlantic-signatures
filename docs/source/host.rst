@@ -2,6 +2,8 @@
 Lab Computer Setup
 ==================
 
+.. todo:: Update the lab computer setup instructions.
+
 -------------------
 Goals of this Guide
 -------------------
@@ -34,7 +36,3 @@ amongst other directories. From this directory enter:
 
 The lab computer is now setup! Everytime you wish to run tests, you will do
 so from the anaconda prompt.
-
-.. todo::
-
-    Update the lab computer setup instructions.

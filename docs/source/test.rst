@@ -2,6 +2,8 @@
 Running Your First Test
 =======================
 
+.. todo:: Update (or more likely remove as obsolete) the test instructions.
+
 You are now ready to run tests using the irobot Create for the Atlantic
 Signatures project! The python package comes with a file titled: "demo.cfg",
 this file is a configuration script and contains all the parameters relevant
@@ -51,7 +53,3 @@ Once the test is complete (failure or success), a data file will be generated in
 aptly named directory titled 'data'. The data directory will be created at the location
 the anaconda prompt was working at which should be the users home page (for me it is
 C:\\Users\\lucsc).
-
-.. todo::
-
-    Update the test instructions.

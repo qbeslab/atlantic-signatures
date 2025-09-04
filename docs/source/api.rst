@@ -2,6 +2,8 @@
 API Reference Guide
 ===================
 
+.. todo:: Finish updating docstrings.
+
 .. toctree::
     :maxdepth: 2
 
@@ -15,7 +17,3 @@ API Reference Guide
     api/simulation
     api/socket_protocol
     api/units
-
-.. todo::
-
-    Finish updating docstrings.

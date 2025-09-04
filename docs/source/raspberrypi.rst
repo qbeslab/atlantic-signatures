@@ -2,6 +2,8 @@
 Raspberry Pi Setup
 ==================
 
+.. todo:: Make Raspberry Pi and wifi passwords available somewhere secure.
+
 -------------------
 Goals of this Guide
 -------------------
